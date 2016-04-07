@@ -1,0 +1,172 @@
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+
+        <service id="offer.repository" class="SpyimmoBundle\Repository\OfferRepository">
+            <factory service="doctrine" method="getRepository"/>
+            <argument>SpyimmoBundle\Entity\Offer</argument>
+        </service>
+
+        <service id="test.logger.service" class="SpyimmoBundle\Logger\SpyimmoLogger">
+        </service>
+
+        <service id="app.pushbullet.notifier" class="SpyimmoBundle\Notifier\PushbulletNotifier">
+            <argument>%pushbullet_api_key%</argument>
+        </service>
+
+        <service id="offer.manager" class="SpyimmoBundle\Manager\OfferManager">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="offer.repository"/>
+            <argument type="service" id="test.logger.service"/>
+            <argument>%spyimmo.postal_codes%</argument>
+        </service>
+
+        <service id="test.crawler.service"
+                 class="SpyimmoBundle\Services\CrawlerService"
+        >
+        </service>
+
+        <service id="test.crawler.abstract" class="SpyimmoBundle\Crawlers\AbstractCrawler" abstract="true">
+            <call method="setOfferManager">
+                <argument type="service" id="offer.manager"/>
+            </call>
+            <call method="setSpyimmoLogger">
+                <argument type="service" id="test.logger.service"/>
+            </call>
+        </service>
+
+        <service id="test.twig.extension.text" class="Twig_Extensions_Extension_Text">
+            <tag name="twig.extension"/>
+        </service>
+
+        <service
+                id="test.avendrealouer.crawler"
+                class="SpyimmoBundle\Crawlers\AvendrealouerCrawler"
+                parent="test.crawler.abstract"
+        >
+             <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.seloger.crawler"
+                class="SpyimmoBundle\Crawlers\SelogerCrawler"
+                parent="test.crawler.abstract"
+        >
+            <!--<tag name="offer.crawler"/>-->
+        </service>
+
+        <service
+                id="test.selogerApi.crawler"
+                class="SpyimmoBundle\Crawlers\SelogerApiCrawler"
+                parent="test.crawler.abstract"
+                >
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.ommi.crawler"
+                class="SpyimmoBundle\Crawlers\OmmiCrawler"
+                parent="test.crawler.abstract"
+                >
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.century21.crawler"
+                class="SpyimmoBundle\Crawlers\Century21Crawler"
+                parent="test.crawler.abstract"
+                >
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.fnaim.crawler"
+                class="SpyimmoBundle\Crawlers\FnaimCrawler"
+                parent="test.crawler.abstract"
+                >
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.foncia.crawler"
+                class="SpyimmoBundle\Crawlers\FonciaCrawler"
+                parent="test.crawler.abstract"
+                >
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.bao.crawler"
+                class="SpyimmoBundle\Crawlers\BaoCrawler"
+                parent="test.crawler.abstract"
+        >
+            <call method="setUsername">
+                <argument>%bao_username%</argument>
+            </call>
+            <call method="setPassword">
+                <argument>%bao_password%%</argument>
+            </call>
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.gdc.crawler"
+                class="SpyimmoBundle\Crawlers\GdcCrawler"
+                parent="test.crawler.abstract"
+        >
+            <call method="setUsername">
+                <argument>%gdc_username%</argument>
+            </call>
+            <call method="setPassword">
+                <argument>%gdc_password%%</argument>
+            </call>
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.leboncoin.crawler"
+                class="SpyimmoBundle\Crawlers\LeboncoinCrawler"
+                parent="test.crawler.abstract"
+        >
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.paruvendu.crawler"
+                class="SpyimmoBundle\Crawlers\ParuvenduCrawler"
+                parent="test.crawler.abstract"
+        >
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.pap.crawler"
+                class="SpyimmoBundle\Crawlers\PapCrawler"
+                parent="test.crawler.abstract"
+        >
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.explorimo.crawler"
+                class="SpyimmoBundle\Crawlers\ExplorimoCrawler"
+                parent="test.crawler.abstract"
+        >
+            <tag name="offer.crawler"/>
+        </service>
+
+        <service
+                id="test.crawl_command"
+                class="SpyimmoBundle\Command\CrawlCommand"
+        >
+            <tag name="console.command"/>
+            <call method="setCrawlerService">
+                <argument type="service" id="test.crawler.service"/>
+            </call>
+        </service>
+
+
+    </services>
+</container>
