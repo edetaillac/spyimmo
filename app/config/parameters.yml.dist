@@ -23,3 +23,7 @@ parameters:
     gdc_password: secret
     bao_username: secret
     bao_password: secret
+
+    # Google client for OAuth2
+    google_client_id:     ~
+    google_client_secret: ~

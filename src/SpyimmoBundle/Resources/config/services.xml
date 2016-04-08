@@ -167,6 +167,8 @@
             </call>
         </service>
 
-
+        <service id="spyimmo.user_provider.oauth2" class="SpyimmoBundle\Security\Core\User\OAuth2UserProvider">
+            <argument type="service" id="doctrine" />
+        </service>
     </services>
 </container>
