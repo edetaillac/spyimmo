@@ -1,0 +1,29 @@
+database:
+    environment:
+        MYSQL_ROOT_PASSWORD: 'root'
+        MYSQL_DATABASE: 'spyimmo'
+        MYSQL_USER: 'spyimmo'
+        MYSQL_PASSWORD: 'spyimmo'
+    image: mysql:5.7
+    ports:
+        - 3306:3306
+
+php:
+    build: ./docker/php
+    links:
+        - database
+    ports:
+        - 9000:9000
+    volumes:
+        - ./:/srv/http
+
+web:
+    build: ./docker/web
+    links:
+        - php
+    volumes:
+        - ./:/var/www
+        - ./docker/web/nginx.conf:/nginx.conf
+    ports:
+        - 80:80
+    command: nginx -c /nginx.conf
