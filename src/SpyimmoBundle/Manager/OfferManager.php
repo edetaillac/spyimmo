@@ -179,8 +179,6 @@ class OfferManager
             '/colloc|coloc/mi',
             '/sous\Wlocation/mi',
             '/sous\Wloue/mi',
-            '/sous\Wloue/mi',
-            '/sous\Wloue/mi',
             '/chambre [d\’\']*[Éée]{1}tudiant/mi',
         );
 

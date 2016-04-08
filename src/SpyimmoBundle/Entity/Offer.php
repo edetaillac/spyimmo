@@ -30,22 +30,22 @@ class Offer
     protected $description;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $image;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     protected $surface;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     protected $price;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $location;
 
@@ -60,7 +60,7 @@ class Offer
     protected $label;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $tel;
 
@@ -94,7 +94,7 @@ class Offer
     /**
      * @var datetime $contactedAt
      *
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $contactedAt;
 
@@ -362,9 +362,5 @@ class Offer
     {
         $this->tel = $tel;
     }
-
-
-
-
 
 }

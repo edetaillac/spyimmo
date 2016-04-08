@@ -120,7 +120,7 @@
                 <argument>%gdc_username%</argument>
             </call>
             <call method="setPassword">
-                <argument>%gdc_password%%</argument>
+                <argument>%gdc_password%</argument>
             </call>
             <tag name="offer.crawler"/>
         </service>

@@ -85,10 +85,11 @@ class GdcCrawler extends AbstractCrawler
             'adQuery[orderColumn]' => 'displayDate',
             'adQuery[orderDirection]' => 'DESC',
             'adQuery[minRooms]' => $criterias[CrawlerService::MIN_NB_ROOM],
-            'adQuery[maxPrice]' => $criterias[CrawlerService::MAX_BUDGET],
+            'adQuery[maxPrice]' => '',
             'adQuery[minSquareMeters]' => $criterias[CrawlerService::MIN_SURFACE],
           )
         );
+        $this->criterias = $criterias;
 
         $offers = $this->nodeFilter($this->crawler, '.ad-title a');
         if ($offers) {
@@ -130,6 +131,10 @@ class GdcCrawler extends AbstractCrawler
             $price = $this->nodeFilter($this->crawler, '.ad-price', $url);
             $price = $price ? $price->text() : '';
 
+            if($price != '' && intval(preg_replace('/\s/', '', $price)) > $this->criterias[CrawlerService::MAX_BUDGET]) {
+                return 0;
+            }
+
             return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
@@ -147,7 +152,7 @@ class GdcCrawler extends AbstractCrawler
           12,
           14,
           16,
-          17,
+          18,
           20,
           22,
           0
