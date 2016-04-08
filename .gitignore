@@ -1,0 +1,5 @@
+app/config/parameters.yml
+bin
+composer.lock
+var
+vendor
