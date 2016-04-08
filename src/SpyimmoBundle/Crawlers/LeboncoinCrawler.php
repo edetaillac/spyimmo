@@ -122,8 +122,8 @@ class LeboncoinCrawler extends AbstractCrawler
             $price = $this->nodeFilter($this->crawler, '.item_price .value', $url);
             $price = $price ? $price->text() : '';
 
-            $tel = $this->nodeFilter($this->crawler, '.sidebar .phone_number a', $url);
-            $tel = $tel ? $tel->text() : '';
+            // get Contact Phone Number via API
+            $tel = $this->fetchTel($url);
 
             return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price, null, null, $tel);
         } catch (\InvalidArgumentException $e) {
@@ -131,6 +131,35 @@ class LeboncoinCrawler extends AbstractCrawler
         }
 
         return 0;
+    }
+
+    protected function fetchTel($url)
+    {
+        $tel = null;
+        $offerId = $this->nodeFilter($this->crawler, '.saveAd', $url);
+        $offerId = $offerId ? $offerId->attr('data-savead-id') : '';
+        preg_match('/var\s+apiKey\s*=\s*"([a-z0-9]+)"/mi', $this->crawler->html(), $result);
+
+        if (isset($result[1]) && $offerId) {
+            $apiKey = $result[1];
+            $response = $this->client->getClient()->post(
+                'https://api.leboncoin.fr/api/utils/phonenumber.json',
+                [
+                    'form_params' => [
+                        'list_id' => $offerId,
+                        'app_id' => 'leboncoin_web_utils',
+                        'key' => $apiKey,
+                        'text' => '1'
+                    ]
+                ]
+            );
+            $result = json_decode($response->getBody());
+            if(property_exists($result->utils, 'phonenumber') ) {
+                $tel = $result->utils->phonenumber;
+            }
+        }
+
+        return $tel;
     }
 
     protected function removeDescriptionInfo($description)
