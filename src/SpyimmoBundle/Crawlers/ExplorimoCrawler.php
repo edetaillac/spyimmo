@@ -84,7 +84,7 @@ class ExplorimoCrawler extends AbstractCrawler
             $description .= $descriptionBis ? $descriptionBis->text() : '';
 
             $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.container-slider-thumbnails a.thumbnail-link img', $url);
+            $imageNodes = $this->nodeFilter($this->crawler, '.slides li a img', $url);
             if($imageNodes) {
                 $imageNodes->each(
                     function (Crawler $node) use (&$images) {

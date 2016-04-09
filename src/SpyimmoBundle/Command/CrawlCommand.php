@@ -36,6 +36,12 @@ class CrawlCommand extends ContainerAwareCommand
             null,
             InputOption::VALUE_OPTIONAL,
             'If set, the task will force specific crawler'
+          )
+          ->addOption(
+            'now',
+            null,
+            InputOption::VALUE_NONE,
+            'If set, no delay is set'
           );
     }
 
@@ -45,11 +51,12 @@ class CrawlCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $forcedCrawler = $input->getOption('crawler');
+        $noDelay = $input->getOption('now');
         $io = new SymfonyStyle($input, $output);
         $this->getContainer()->get('test.logger.service')->setLogger($io);
         $io->title('Spyimmo Crawler');
 
-        if(!$forcedCrawler) {
+        if(!$forcedCrawler && !$noDelay) {
             // Just avoid crawling at fixed time
             $waitingTime = rand(0, 600);
             $io->text(sprintf('Waiting %d seconds before crawling ...', $waitingTime));

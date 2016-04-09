@@ -8,27 +8,35 @@
         {% include "SpyimmoBundle:Default:offerPictures.html.twig" with {'offer': offer} %}
     {% endif %}
 
-    <ul>
-        <li>Date: {{ offer.created|date("Y-m-d H:i") }}</li>
-        <li>Lieu: {{ offer.location }}</li>
-        <li>Prix: {{ offer.price }}  €</li>
-        <li>Surface: <span class="badge">{{ offer.surface|e }} m²</span></li>
-        <li>Contact: {{ offer.tel }}</li>
-        <li><a href="{{ offer.url }}" target="_blank">Voir l'offre sur {{ offer.label }}</a></li>
+    <ul class="offerDetail">
+        <li><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> : {{ offer.created|date("Y-m-d H:i") }}</li>
+        {% if offer.location %}
+            <li><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> : {{ offer.location }} </li>
+        {% endif %}
+        {% if offer.price %}
+            <li><span class="glyphicon glyphicon glyphicon-euro" aria-hidden="true"></span> : {{ offer.price }}  €</li>
+        {% endif %}
+        {% if offer.price %}
+            <li><span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span> : {{ offer.surface|e }} m²</li>
+        {% endif %}
+        {% if offer.tel %}
+            <li><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span> : {{ offer.tel }}</li>
+        {% endif %}
+        <li><span class="glyphicon glyphicon-link" aria-hidden="true"></span> : <a href="{{ offer.url }}" target="_blank">Voir l'offre sur {{ offer.label }}</a></li>
     </ul>
     <p>{{ offer.description }}</p>
 </div>
 
 <div class="modal-footer">
     {% if offer.favorite %}
-        <button title="Enlever favori" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-default unfavorite"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></button>
+        <button title="Enlever favori" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-default unfavorite"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span> Enlever favori</button>
     {% else %}
-        <button title="Marqué comme favori" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-success favorite"><span class="glyphicon glyphicon-star" aria-hidden="true"></span></button>
+        <button title="Marquer comme favori" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-success favorite"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Marquer comme favori</button>
     {% endif %}
 
     {% if offer.favorite %}
         {% if not offer.contacted %}
-            <button title="Marqué comme contacté" data-id="{{ offer.id }}" type="button" class="btn btn-primary contactedAction"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></button>
+            <button title="Marqué comme contacté" data-id="{{ offer.id }}" type="button" class="btn btn-primary contactedAction"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Marquer comme contacté</button>
         {% endif %}
     {% endif %}
 </div>

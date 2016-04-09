@@ -138,11 +138,14 @@ class GdcCrawler extends AbstractCrawler
             $price = $this->nodeFilter($this->crawler, '.ad-price', $url);
             $price = $price ? $price->text() : '';
 
+            $tel = $this->nodeFilter($this->crawler, '.contentInner #owner-phone span.btn-tip', $url);
+            $tel = $tel ? $tel->text() : null;
+
             if($price != '' && intval(preg_replace('/\s/', '', $price)) > $this->criterias[CrawlerService::MAX_BUDGET]) {
                 return 0;
             }
 
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
+            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
         }

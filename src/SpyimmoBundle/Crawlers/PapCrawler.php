@@ -86,7 +86,7 @@ class PapCrawler extends AbstractCrawler
             $description .= $descriptionBis ? $descriptionBis->text() : '';
 
             $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.showcase-thumbnail-container img', $url);
+            $imageNodes = $this->nodeFilter($this->crawler, '.showcase-slide .showcase-content img', $url);
             if($imageNodes) {
                 $imageNodes->each(
                     function (Crawler $node) use (&$images) {

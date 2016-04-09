@@ -1,4 +1,4 @@
-<div id="carousel-example-generic" class="carousel slide" data-ride="carousel" style="margin-bottom: 15px">
+<div id="carousel-example-generic" class="carousel slide" data-interval="false" data-ride="carousel" style="margin-bottom: 15px">
     <!-- Indicators -->
     <ol class="carousel-indicators">
         {% for picture in offer.pictures %}
@@ -10,7 +10,7 @@
     <div class="carousel-inner" role="listbox">
         {% for picture in offer.pictures %}
             <div class="item {% if loop.index == 1 %}active{% endif %}">
-                <img src="{{ picture.src }}" width="570" />
+                <img src="{{ picture.src }}" />
             </div>
         {% endfor %}
     </div>
