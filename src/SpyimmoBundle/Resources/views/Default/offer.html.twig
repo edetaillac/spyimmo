@@ -1,0 +1,34 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title" id="myModalLabel">{{ offer.title }}</h4>
+</div>
+<div class="modal-body">
+
+    {% if offer.pictures|length > 0 %}
+        {% include "SpyimmoBundle:Default:offerPictures.html.twig" with {'offer': offer} %}
+    {% endif %}
+
+    <ul>
+        <li>Date: {{ offer.created|date("Y-m-d H:i") }}</li>
+        <li>Lieu: {{ offer.location }}</li>
+        <li>Prix: {{ offer.price }}  €</li>
+        <li>Surface: <span class="badge">{{ offer.surface|e }} m²</span></li>
+        <li>Contact: {{ offer.tel }}</li>
+        <li><a href="{{ offer.url }}" target="_blank">Voir l'offre sur {{ offer.label }}</a></li>
+    </ul>
+    <p>{{ offer.description }}</p>
+</div>
+
+<div class="modal-footer">
+    {% if offer.favorite %}
+        <button title="Enlever favori" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-default unfavorite"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></button>
+    {% else %}
+        <button title="Marqué comme favori" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-success favorite"><span class="glyphicon glyphicon-star" aria-hidden="true"></span></button>
+    {% endif %}
+
+    {% if offer.favorite %}
+        {% if not offer.contacted %}
+            <button title="Marqué comme contacté" data-id="{{ offer.id }}" type="button" class="btn btn-primary contactedAction"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></button>
+        {% endif %}
+    {% endif %}
+</div>

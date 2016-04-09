@@ -83,20 +83,45 @@ class ExplorimoCrawler extends AbstractCrawler
             $descriptionBis = $this->nodeFilter($this->crawler, '.container-main .features', $url);
             $description .= $descriptionBis ? $descriptionBis->text() : '';
 
-            $image = $this->nodeFilter($this->crawler, '.container-detail-slider img', $url);
-            $image = $image && (count($image) > 0) ? $image->first()->attr('src') : null;
+            $images = [];
+            $imageNodes = $this->nodeFilter($this->crawler, '.container-slider-thumbnails a.thumbnail-link img', $url);
+            if($imageNodes) {
+                $imageNodes->each(
+                    function (Crawler $node) use (&$images) {
+                        $images[] = $node->attr('src');
+                    }
+                );
+            }
 
             $price = $this->nodeFilter($this->crawler, '.container-main-informations .price', $url);
             $price = $price ? $price->text() : '';
 
-            $tel = $this->nodeFilter($this->crawler, '.informations-agency .contact-phone-button', $url);
-            $tel = $tel ? $tel->text() : '';
+            // get Contact Phone Number via API
+            $tel = $this->fetchTel($url);
 
-            return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price, null, null, $tel);
+            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
         }
 
         return 0;
+    }
+
+    protected function fetchTel($url)
+    {
+        $tel = null;
+        $offerId = $this->nodeFilter($this->crawler, '.informations-agency .contact-phone-button', $url);
+        $offerId = $offerId ? $offerId->attr('data-classified-id') : '';
+        if ($offerId) {
+            $response = $this->client->getClient()->get(
+                sprintf('http://www.explorimmo.com/rest/classifieds/%s/phone', $offerId)
+            );
+            $result = json_decode($response->getBody());
+            if(property_exists($result, 'phoneNumber') ) {
+                $tel = $result->phoneNumber;
+            }
+        }
+
+        return $tel;
     }
 }

@@ -85,8 +85,15 @@ class PapCrawler extends AbstractCrawler
             $descriptionBis = $this->nodeFilter($this->crawler, '.footer-descriptif', $url);
             $description .= $descriptionBis ? $descriptionBis->text() : '';
 
-            $image = $this->nodeFilter($this->crawler, '.showcase-content img', $url);
-            $image = $image && (count($image) > 0) ? $image->first()->attr('src') : null;
+            $images = [];
+            $imageNodes = $this->nodeFilter($this->crawler, '.showcase-thumbnail-container img', $url);
+            if($imageNodes) {
+                $imageNodes->each(
+                    function (Crawler $node) use (&$images) {
+                        $images[] = $node->attr('src');
+                    }
+                );
+            }
 
             $price = $this->nodeFilter($this->crawler, '.descriptif-container .prix', $url);
             $price = $price ? $price->text() : '';
@@ -94,7 +101,7 @@ class PapCrawler extends AbstractCrawler
             $tel = $this->nodeFilter($this->crawler, '.contact-proprietaire-simple span.telephone', $url);
             $tel = $tel && (count($tel) > 0) ? $tel->first()->text() : null;
 
-            return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price, null, null, $tel);
+            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
         }

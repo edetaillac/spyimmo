@@ -88,17 +88,28 @@ class ParuvenduCrawler extends AbstractCrawler
             $description = $this->nodeFilter($this->crawler, '.im12_txt_ann', $url);
             $description = $description ? $description->text() : '';
 
-            $image = $this->nodeFilter($this->crawler, '#listePhotos .imdet15-blcphomain img', $url);
-            $image = $image && (count($image) > 0) ? $image->first()->attr('src') : null;
+            $images = $this->fetchImages();
 
             $price = $this->nodeFilter($this->crawler, '#autoprix', $url);
             $price = $price ? $price->text() : '';
 
-            return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price);
+            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
         }
 
         return 0;
+    }
+
+    protected function fetchImages()
+    {
+        // Images are stored in javascript event so we must parse javascript with regexp
+        $images = array();
+        preg_match_all('/\$\(\'#pic_main\'\)\.attr\(\'src\'\s*,\s*\'([^\']*)\'\);/mi', $this->crawler->html(), $matches, PREG_SET_ORDER);
+        foreach ($matches as $val) {
+            $images[] = trim($val[1]);
+        }
+
+        return $images;
     }
 }

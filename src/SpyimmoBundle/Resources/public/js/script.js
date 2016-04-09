@@ -6,11 +6,21 @@ $(function () {
 
 	 $('#offerTable').DataTable({
 		"lengthMenu": [[25, 50, -1], [25, 50, "All"]],
-	 	"order": [[ 8, "desc" ]],
+	 	"order": [[ 7, "desc" ]],
         "language": {
              "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
         }
 	 });
+
+
+    $(document).on("click", ".offerLink", function () {
+        console.log('get');
+        $.ajax({
+            url: Routing.generate('detail', {id: $(this).closest('tr').data('id')})
+        }).done(function (html) {
+            $('.modal-content').html(html);
+        });
+    });
 
 
     $(document).on("click", ".favorite", function () {

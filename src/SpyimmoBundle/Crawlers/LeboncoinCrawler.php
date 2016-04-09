@@ -116,8 +116,7 @@ class LeboncoinCrawler extends AbstractCrawler
             }
             $description = $this->removeDescriptionInfo($description);
 
-            $image = $this->nodeFilter($this->crawler, '.item_image img', $url);
-            $image = $image && (count($image) > 0) ? 'http:' . $image->first()->attr('src') : null;
+            $images = $this->fetchImages();
 
             $price = $this->nodeFilter($this->crawler, '.item_price .value', $url);
             $price = $price ? $price->text() : '';
@@ -125,12 +124,24 @@ class LeboncoinCrawler extends AbstractCrawler
             // get Contact Phone Number via API
             $tel = $this->fetchTel($url);
 
-            return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price, null, null, $tel);
+            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
         }
 
         return 0;
+    }
+
+    protected function fetchImages()
+    {
+        // Images are stored in javascript array so we must parse javascript with regexp
+        $images = array();
+        preg_match_all('/images\[[0-9]\]\s*=\s*"([^\"]*)"/mi', $this->crawler->html(), $matches, PREG_SET_ORDER);
+        foreach ($matches as $val) {
+            $images[] = sprintf('http:%s', $val[1]);
+        }
+
+        return $images;
     }
 
     protected function fetchTel($url)

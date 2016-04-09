@@ -9,10 +9,9 @@
             <thead>
             <tr>
                 <th class="hidden-xs">Image</th>
-                <th width="16%">Titre</th>
+                <th>Titre</th>
                 <th>Surface</th>
-                <th width="6px">Prix</th>
-                <th class="hidden-xs hidden-sm" width="20%">Description</th>
+                <th>Prix</th>
                 <th>Lieu</th>
                 <th class="hidden-xs" width="135px">Action</th>
                 <th class="hidden-xs">Origine</th>
@@ -20,45 +19,31 @@
             </tr>
             </thead>
             {% for offer in offers %}
-            <tr class="{% if offer.favorite %}success{% endif %} {% if offer.hidden %}danger{% endif %}">
+            <tr data-id="{{ offer.id }}" class="{% if offer.favorite %}success{% endif %} {% if offer.hidden %}danger{% endif %}">
                 <td class="hidden-xs">
-                    {% if offer.image %}
-                        <a target="_blank" href="{{ offer.url }}"><img src="{{ offer.image }}" width="120" /></a>
-                    {% else %}
-                        <img src="{{ asset('bundles/spyimmo/images/default.jpg') }}" width="120" />
-                    {% endif %}
+                    <a class="offerLink" target="_blank" data-toggle="modal" data-target="#myModal">
+                        {% if offer.pictures|length > 0 %}
+                            {% set image = offer.pictures|first  %}
+                            <img src="{{ image.src }}" width="120" />
+                        {% else %}
+                            <img src="{{ asset('bundles/spyimmo/images/default.jpg') }}" width="120" />
+                        {% endif %}
+                    </a>
                 </td>
                 <td>
                     {% if offer.suspicious %}
                         <span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span>
                     {% endif %}
                     <span title="{{ offer.contactedAt|date("d/m/Y H:i") }}" class="glyphicon glyphicon-envelope {% if not offer.contacted %}hidden{% endif %}" aria-hidden="true"></span>
-                    <a class="offerTitle" target="_blank" href="{{ offer.url }}" style="font-size: 12px">
+                    <a class="offerLink offerTitle" target="_blank" data-toggle="modal" data-target="#myModal" style="font-size: 12px">
                         {{ offer.title|e }}
                     </a>
                 </td>
                 <td>{% if offer.surface %} <span class="badge">{{ offer.surface|e }} m²</span>{% endif %}</td>
                 <td>{% if offer.price %} {{ offer.price|e }} €{% endif %}</td>
-                <td class="hidden-xs hidden-sm" style="font-size: 10px">
-                    {{ offer.description| truncate(220, true) }}
-                </td>
                 <td>{{ offer.location|e }}</td>
                 <td class="hidden-xs">
-                    {% if offer.tel %}
-                        <a href="tel:{{ offer.tel }}"><span title="{{ offer.tel }}" class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span></a>&nbsp;&nbsp;&nbsp;
-                    {% endif %}
-
-                    {% if offer.favorite %}
-                        <button title="Enlever favori" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-default unfavorite"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></button>
-                    {% else %}
-                        <button title="Marqué comme favori" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-success favorite"><span class="glyphicon glyphicon-star" aria-hidden="true"></span></button>
-                    {% endif %}
-
-                    {% if offer.favorite %}
-                        {% if not offer.contacted %}
-                            <button title="Marqué comme contacté" data-id="{{ offer.id }}" type="button" class="btn btn-primary contactedAction"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></button>
-                        {% endif %}
-                    {% else %}
+                    {% if not offer.favorite %}
                         {% if offer.hidden %}
                             <button title="Rendre visible" data-id="{{ offer.id }}" type="button" class="btn btn-primary btn-warning unhideAction"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
                         {% else %}
@@ -71,5 +56,13 @@
                     {% endfor %}
         </table>
     </div><br><br>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
 {% endblock %}
 

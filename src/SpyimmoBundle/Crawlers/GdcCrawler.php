@@ -125,8 +125,15 @@ class GdcCrawler extends AbstractCrawler
             $description = $this->nodeFilter($this->crawler, '#ad-description', $url);
             $description = $description ? $description->text() : '';
 
-            $image = $this->nodeFilter($this->crawler, '.ad-images img', $url);
-            $image = $image && (count($image) > 0) ? 'https:' . $image->first()->attr('src') : null;
+            $images = [];
+            $imageNodes = $this->nodeFilter($this->crawler, '.ad-images img', $url);
+            if($imageNodes) {
+                $imageNodes->each(
+                    function (Crawler $node) use (&$images) {
+                        $images[] = 'https:' . $node->attr('src');
+                    }
+                );
+            }
 
             $price = $this->nodeFilter($this->crawler, '.ad-price', $url);
             $price = $price ? $price->text() : '';
@@ -135,7 +142,7 @@ class GdcCrawler extends AbstractCrawler
                 return 0;
             }
 
-            return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price);
+            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
         }

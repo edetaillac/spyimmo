@@ -23,12 +23,21 @@ class DefaultController extends Controller
     }
 
     /**
+     * @Route("/detail/{id}", name="detail", options={"expose"=true})
+     */
+    public function detailAction($id)
+    {
+        $repository = $this->get('offer.repository');
+        $offer = $repository->getOffer($id);
+
+        return $this->render('@Spyimmo/Default/offer.html.twig', array('offer' => $offer));
+    }
+
+    /**
      * @Route("/favorite/all", name="indexFavorite")
      */
     public function indexFavoriteAction(Request $request)
     {
-        // replace this example code with whatever you need
-
         $repository = $this->get('offer.repository');
         $offers = $repository->getFavoriteOffers();
 
@@ -40,8 +49,6 @@ class DefaultController extends Controller
      */
     public function indexHiddenAction(Request $request)
     {
-        // replace this example code with whatever you need
-
         $repository = $this->get('offer.repository');
         $offers = $repository->getHiddenOffers();
 

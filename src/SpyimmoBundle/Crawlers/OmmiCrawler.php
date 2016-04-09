@@ -80,13 +80,20 @@ class OmmiCrawler extends AbstractCrawler
                 );
             }
 
-            $image = $this->nodeFilter($this->crawler, '.tab-annonce-photo .table-photo img', $url);
-            $image = $image && (count($image) > 0) ? self::SITE_URL . $image->first()->attr('src') : null;
+            $images = [];
+            $imageNodes = $this->nodeFilter($this->crawler, '.tab-annonce-photo .l-sider-image-container img', $url);
+            if($imageNodes) {
+                $imageNodes->each(
+                    function (Crawler $node) use (&$images) {
+                        $images[] = $node->attr('src');
+                    }
+                );
+            }
 
             $price = $this->nodeFilter($this->crawler, '.box-price .price', $url);
             $price = $price ? $price->text() : '';
 
-            return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price);
+            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
         }

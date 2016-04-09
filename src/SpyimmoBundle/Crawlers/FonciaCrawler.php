@@ -69,13 +69,20 @@ class FonciaCrawler extends AbstractCrawler
             $description = $this->nodeFilter($descriptionBlock->first(), '.OfferDetails-content', $url);
             $description = $description ? $description->text() : '';
 
-            $image = $this->nodeFilter($this->crawler, '.OfferSlider .OfferSlider-main-slides li img', $url);
-            $image = $image && (count($image) > 0) ? $image->first()->attr('src') : null;
+            $images = [];
+            $imageNodes = $this->nodeFilter($this->crawler, '.OfferSlider .OfferSlider-main-slides li:not(.clone) img', $url);
+            if($imageNodes) {
+                $imageNodes->each(
+                    function (Crawler $node) use (&$images) {
+                        $images[] = $node->attr('src');
+                    }
+                );
+            }
 
             $price = $this->nodeFilter($this->crawler, '.Content-main .OfferTop-price', $url);
             $price = $price ? $price->text() : '';
 
-            return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price);
+            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
         }

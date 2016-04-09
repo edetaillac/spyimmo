@@ -4,6 +4,7 @@ namespace SpyimmoBundle\Manager;
 
 use Doctrine\ORM\EntityManager;
 use SpyimmoBundle\Entity\Offer;
+use SpyimmoBundle\Entity\Picture;
 use SpyimmoBundle\Logger\SpyimmoLogger;
 use SpyimmoBundle\Repository\OfferRepository;
 
@@ -29,7 +30,7 @@ class OfferManager
         return !$this->offerRepository->findOneByUrl($url);
     }
 
-    public function createOffer($title, $description, $image, $url, $name, $price = null, $postalCode = null, $surface = null, $tel = null)
+    public function createOffer($title, $description, array $images, $url, $name, $price = null, $postalCode = null, $surface = null, $tel = null)
     {
         $info = $this->cleanString($title . ' ' . $description);
         $isSuspicious = false;
@@ -44,7 +45,14 @@ class OfferManager
             $offer = new Offer();
             $offer->setTitle($title);
             $offer->setDescription($description);
-            $offer->setImage($image);
+
+            foreach($images as $image){
+                $picture = new Picture();
+                $picture->setSrc($image);
+                $picture->setOffer($offer);
+                $this->em->persist($picture);
+            }
+
             $offer->setUrl($url);
             $offer->setLabel($name);
             $offer->setSuspicious($isSuspicious);

@@ -11,6 +11,8 @@ class OfferRepository extends EntityRepository
     public function getFavoriteOffers()
     {
         $query = $this->createQueryBuilder('o')
+          ->leftJoin('o.pictures', 'p')
+          ->addSelect('p')
           ->where('o.favorite = :favorite')
           ->andWhere('o.hidden = :hidden')
           ->setParameter('favorite', 1)
@@ -24,6 +26,8 @@ class OfferRepository extends EntityRepository
     public function getHiddenOffers()
     {
         $query = $this->createQueryBuilder('o')
+          ->leftJoin('o.pictures', 'p')
+          ->addSelect('p')
           ->where('o.hidden = :hidden')
           ->orWhere('o.suspicious = :suspicious')
           ->setParameter('hidden', 1)
@@ -37,6 +41,8 @@ class OfferRepository extends EntityRepository
     public function getOffers()
     {
         $query = $this->createQueryBuilder('o')
+          ->leftJoin('o.pictures', 'p')
+          ->addSelect('p')
           ->where('o.hidden = :hidden')
           ->andWhere('o.suspicious = :suspicious')
           ->setParameter('hidden', 0)
@@ -45,6 +51,17 @@ class OfferRepository extends EntityRepository
           ->setMaxResults(150);
 
         return $query->getQuery()->useResultCache(true, 300)->getResult();
+    }
+
+    public function getOffer($id)
+    {
+        $query = $this->createQueryBuilder('o')
+            ->leftJoin('o.pictures', 'p')
+            ->addSelect('p')
+            ->where('o.id = :id')
+            ->setParameter('id', $id);
+
+        return $query->getQuery()->useResultCache(true, 600)->getSingleResult();
     }
 
     public function getSimilarOffer($description)

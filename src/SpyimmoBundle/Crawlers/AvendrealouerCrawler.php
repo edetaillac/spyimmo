@@ -88,8 +88,15 @@ class AvendrealouerCrawler extends AbstractCrawler
                 );
             }
 
-            $image = $this->nodeFilter($this->crawler, '.topSummary .slideCtnr ul img', $url);
-            $image = $image && (count($image) > 0) ? $image->first()->attr('src') : null;
+            $images = [];
+            $imageNodes = $this->nodeFilter($this->crawler, '.topSummary .slideCtnr ul img', $url);
+            if($imageNodes) {
+                $imageNodes->each(
+                    function (Crawler $node) use (&$images) {
+                        $images[] = $node->attr('src');
+                    }
+                );
+            }
 
             $price = $this->nodeFilter($this->crawler, '.topSummary .display-price', $url);
             $price = $price ? $price->text() : '';
@@ -97,7 +104,7 @@ class AvendrealouerCrawler extends AbstractCrawler
             $tel = $this->nodeFilter($this->crawler, '.rightFormCtnr #display-phonenumber-1', $url);
             $tel = $tel ? $tel->text() : '';
 
-            return $this->offerManager->createOffer($title, $description, $image, $url, self::NAME, $price, null, null, $tel);
+            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
         } catch (\InvalidArgumentException $e) {
             echo sprintf("[%s] unable to parse %s: %s\n", $this->name, $url, $e->getMessage());
         } catch (RequestException $e) {

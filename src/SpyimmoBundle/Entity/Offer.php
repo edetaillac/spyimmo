@@ -2,6 +2,7 @@
 
 namespace SpyimmoBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -25,14 +26,14 @@ class Offer
     protected $title;
 
     /**
+     * @ORM\OneToMany(targetEntity="Picture", mappedBy="offer")
+     */
+    protected $pictures;
+
+    /**
      * @ORM\Column(type="text")
      */
     protected $description;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    protected $image;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -98,6 +99,10 @@ class Offer
      */
     protected $contactedAt;
 
+    public function __construct() {
+        $this->pictures = new ArrayCollection();
+    }
+
     /**
      * Gets triggered only on insert
      * @ORM\PrePersist
@@ -158,18 +163,84 @@ class Offer
     /**
      * @return mixed
      */
-    public function getImage()
+    public function getImage1()
     {
-        return $this->image;
+        return $this->image1;
     }
 
     /**
-     * @param mixed $image
+     * @param mixed $image1
      */
-    public function setImage($image)
+    public function setImage1($image1)
     {
-        $this->image = $image;
+        $this->image1 = $image1;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getImage2()
+    {
+        return $this->image2;
+    }
+
+    /**
+     * @param mixed $image2
+     */
+    public function setImage2($image2)
+    {
+        $this->image2 = $image2;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImage3()
+    {
+        return $this->image3;
+    }
+
+    /**
+     * @param mixed $image3
+     */
+    public function setImage3($image3)
+    {
+        $this->image3 = $image3;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImage4()
+    {
+        return $this->image4;
+    }
+
+    /**
+     * @param mixed $image4
+     */
+    public function setImage4($image4)
+    {
+        $this->image4 = $image4;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImage5()
+    {
+        return $this->image5;
+    }
+
+    /**
+     * @param mixed $image5
+     */
+    public function setImage5($image5)
+    {
+        $this->image5 = $image5;
+    }
+
+
 
     /**
      * @return mixed
@@ -362,5 +433,23 @@ class Offer
     {
         $this->tel = $tel;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPictures()
+    {
+        return $this->pictures;
+    }
+
+    /**
+     * @param mixed $pictures
+     */
+    public function setPictures($pictures)
+    {
+        $this->pictures = $pictures;
+    }
+
+
 
 }
