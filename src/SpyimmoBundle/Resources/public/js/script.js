@@ -25,7 +25,6 @@ $(function () {
         });
     });
 
-
     $(document).on("click", ".favorite", function () {
         var button = $(this);
         $.ajax({
@@ -83,6 +82,43 @@ $(function () {
             });
         }
     });
+
+    $(document).on("click", "#offerNoteValid", function () {
+        var button = $(this);
+        var form = button.closest('form');
+        $.ajax({
+            url: form.attr('action'),
+            method: form.attr('method'),
+            data: form.serialize()
+        }).done(function (html) {
+            if(html == 'OK') {
+                $('.noteFormSaved').show();
+            }
+        });
+    });
+
+    $(document).on("click", "#offerVisitValid", function () {
+        var button = $(this);
+        var form = button.closest('form');
+        $.ajax({
+            url: form.attr('action'),
+            method: form.attr('method'),
+            data: form.serialize()
+        }).done(function (html) {
+            if(html == 'OK') {
+                $('.visitFormSaved').show();
+            }
+        });
+    });
+
+    $(document).on("click", ".setVisit", function () {
+        $('.visitForm').toggle();
+    });
+
+    $(document).on("click", ".setNote", function () {
+        $('.noteForm').toggle();
+    });
+
 
 
 });

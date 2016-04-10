@@ -1,4 +1,4 @@
-<div class="modal-header">
+<div class="modal-header" xmlns="http://www.w3.org/1999/html">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <h4 class="modal-title" id="myModalLabel">{{ offer.title }}</h4>
 </div>
@@ -23,8 +23,20 @@
             <li><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span> : {{ offer.tel }}</li>
         {% endif %}
         <li><span class="glyphicon glyphicon-link" aria-hidden="true"></span> : <a href="{{ offer.url }}" target="_blank">Voir l'offre sur {{ offer.label }}</a></li>
+
+        {% if offer.visitDate %}
+            <li><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> <strong>Date visite : {{ offer.visitDate|date("d/m/Y H:i") }}</strong></li>
+        {% endif %}
     </ul>
     <p>{{ offer.description }}</p>
+
+    {% if offer.note %}
+        <h4>Note:</h4>
+        <blockquote><p style="font-style : italic;">{{ offer.note }}</p></blockquote>
+    {% endif %}
+
+    {% include "SpyimmoBundle:Default:offerForm.html.twig" with {'offer': offer, 'noteForm': noteForm, 'visitForm': visitForm} %}
+
 </div>
 
 <div class="modal-footer">

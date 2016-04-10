@@ -104,6 +104,18 @@ class Offer
      */
     protected $contactedAt;
 
+    /**
+     * @var datetime $visitDate
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $visitDate;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $note;
+
     public function __construct() {
         $this->pictures = new ArrayCollection();
         $this->favorite = 0;
@@ -474,6 +486,36 @@ class Offer
         $this->viewed = $viewed;
     }
 
+    /**
+     * @return datetime
+     */
+    public function getVisitDate()
+    {
+        return $this->visitDate;
+    }
 
+    /**
+     * @param datetime $visitDate
+     */
+    public function setVisitDate($visitDate)
+    {
+        $this->visitDate = $visitDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNote()
+    {
+        return $this->note;
+    }
+
+    /**
+     * @param mixed $note
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+    }
 
 }

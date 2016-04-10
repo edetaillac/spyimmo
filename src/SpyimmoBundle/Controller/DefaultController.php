@@ -3,6 +3,9 @@
 namespace SpyimmoBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use SpyimmoBundle\Form\Type\OfferNoteType;
+use SpyimmoBundle\Form\Type\OfferType;
+use SpyimmoBundle\Form\Type\OfferVisitType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,20 +26,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/detail/{id}", name="detail", options={"expose"=true})
-     */
-    public function detailAction($id)
-    {
-        $repository = $this->get('offer.repository');
-        $offer = $repository->getOffer($id);
-        if(!$offer->getViewed()) {
-            $repository->markAsViewed($id);
-        }
-
-        return $this->render('@Spyimmo/Default/offer.html.twig', array('offer' => $offer));
-    }
-
-    /**
      * @Route("/favorite/all", name="indexFavorite")
      */
     public function indexFavoriteAction(Request $request)
@@ -48,6 +37,17 @@ class DefaultController extends Controller
     }
 
     /**
+     * @Route("/visit/all", name="indexVisit")
+     */
+    public function indexVisitAction(Request $request)
+    {
+        $repository = $this->get('offer.repository');
+        $offers = $repository->getVisitOffers();
+
+        return $this->render('@Spyimmo/Default/index.html.twig', array('offers' => $offers, 'title' => 'Visites'));
+    }
+
+    /**
      * @Route("/hidden/all", name="indexHidden")
      */
     public function indexHiddenAction(Request $request)
@@ -56,6 +56,56 @@ class DefaultController extends Controller
         $offers = $repository->getHiddenOffers();
 
         return $this->render('@Spyimmo/Default/index.html.twig', array('offers' => $offers, 'title' => 'Offres cachées'));
+    }
+
+    /**
+     * @Route("/detail/{id}", name="detail", options={"expose"=true})
+     */
+    public function detailAction($id, Request $request)
+    {
+        $repository = $this->get('offer.repository');
+        $offer = $repository->getOffer($id);
+        if(!$offer->getViewed()) {
+            $repository->markAsViewed($id);
+        }
+
+        $formNote = $this->createForm(OfferNoteType::class, $offer);
+        $formVisit = $this->createForm(OfferVisitType::class, $offer);
+
+        return $this->render('@Spyimmo/Default/offer.html.twig', array(
+                'offer' => $offer,
+                'noteForm' => $formNote->createView(),
+                'visitForm' => $formVisit->createView())
+        );
+    }
+
+    /**
+     * @Route("/saveOffer/{id}", name="saveOffer")
+     */
+    public function saveOfferAction($id, Request $request)
+    {
+        $repository = $this->get('offer.repository');
+        $offer = $repository->getOffer($id);
+
+        $formNote = $this->createForm(OfferVisitType::class, $offer);
+        $formNote->handleRequest($request);
+        if ($formNote->isSubmitted() && $formNote->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($offer);
+            $em->flush();
+            return new Response('OK');
+        }
+
+        $formVisit = $this->createForm(OfferNoteType::class, $offer);
+        $formVisit->handleRequest($request);
+        if ($formVisit->isSubmitted() && $formVisit->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($offer);
+            $em->flush();
+            return new Response('OK');
+        }
+
+        return new Response('KO');
     }
 
     /**

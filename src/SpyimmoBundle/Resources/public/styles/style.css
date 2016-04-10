@@ -22,3 +22,18 @@ ul.offerDetail li {
     max-height: 430px;
     display: inline;
 }
+
+.offerLabel, .offerCreated {
+    font-size: 11px
+}
+
+.formVisit div, .formVisit button  {
+    display: inline-block;
+}
+
+.formVisit select  {
+    margin: 0 5px;
+}
+.formVisit button {
+    margin-left: 10px;
+}

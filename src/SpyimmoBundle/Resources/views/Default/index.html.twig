@@ -16,7 +16,13 @@
                 <th>Lieu</th>
                 <th class="hidden-xs" width="135px">Action</th>
                 <th class="hidden-xs">Origine</th>
-                <th class="hidden-xs">Date</th>
+                <th class="hidden-xs">
+                    {% if (app.request.get('_route')) == 'indexVisit' %}
+                        Visite
+                    {% else %}
+                        Date
+                    {% endif %}
+                </th>
             </tr>
             </thead>
             {% for offer in offers %}
@@ -41,7 +47,7 @@
                         </a>
                     </td>
                     <td>
-                        <a class="offerLink offerTitle" target="_blank" data-toggle="modal" data-target="#myModal" style="font-size: 12px">
+                        <a class="offerLink offerTitle" target="_blank" data-toggle="modal" data-target="#myModal">
                             {{ offer.title|e }}
                         </a>
                     </td>
@@ -59,8 +65,14 @@
                             <button title="Enlever favori" type="button" class="btn btn-default btn-default unfavorite"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span> Enlever favori</button>
                         {% endif %}
                     </td>
-                    <td class="hidden-xs" style="font-size: 11px">{{ offer.label|e }}</td>
-                    <td class="hidden-xs" style="font-size: 11px">{{ offer.created|date("Y-m-d H:i") }}</td>
+                    <td class="hidden-xs offerLabel">{{ offer.label|e }}</td>
+                    <td class="hidden-xs offerCreated">
+                        {% if (app.request.get('_route')) == 'indexVisit' %}
+                            {{ offer.visitDate|date("Y-m-d H:i") }}
+                        {% else %}
+                            {{ offer.created|date("Y-m-d H:i") }}
+                        {% endif %}
+                    </td>
                 </tr>
              {% endfor %}
         </table>

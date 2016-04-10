@@ -23,6 +23,18 @@ class OfferRepository extends EntityRepository
         return $query->getQuery()->useResultCache(true, 300)->getResult();
     }
 
+    public function getVisitOffers()
+    {
+        $query = $this->createQueryBuilder('o')
+            ->leftJoin('o.pictures', 'p')
+            ->addSelect('p')
+            ->where('o.visitDate IS NOT NULL')
+            ->orderBy('o.created', 'DESC')
+            ->setMaxResults(150);
+
+        return $query->getQuery()->useResultCache(true, 300)->getResult();
+    }
+
     public function getHiddenOffers()
     {
         $query = $this->createQueryBuilder('o')

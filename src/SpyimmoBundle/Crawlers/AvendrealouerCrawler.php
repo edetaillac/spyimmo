@@ -100,7 +100,7 @@ class AvendrealouerCrawler extends AbstractCrawler
         $price = $price ? $price->text() : '';
 
         $tel = $this->nodeFilter($this->crawler, '.rightFormCtnr #display-phonenumber-1', $url);
-        $tel = $tel ? $tel->text() : '';
+        $tel = $tel ? $tel->attr('data-phone-number') : '';
 
         return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
 

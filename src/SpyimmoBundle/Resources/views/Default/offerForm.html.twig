@@ -1,0 +1,28 @@
+{% spaceless %}
+    <p><a class="setNote" href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Ajouter une note</a></p>
+    <div class="noteForm" style="display: none;">
+        <div class="alert alert-success visitFormSaved" role="alert" style="display: none">Note sauvegardé</div>
+        {{ form_start(noteForm, {'action': path('saveOffer', {'id' : offer.id }), 'method': 'POST'}) }}
+        <div class="form_row">
+            <label class="required">Note</label>
+            {{ form_errors(noteForm) }}
+            {{ form_widget(noteForm.note, { 'attr': {'class': 'form-control', 'rows': '3'} }) }}
+            <input type="button" id="offerVisitValid" class="btn btn-primary" value="Sauvegarder" style="margin-top: 5px"/>
+        </div>
+        {{ form_end(noteForm) }}
+        <br />
+    </div>
+
+    <p><a class="setVisit" href="#"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> Programmer une visite</a></p>
+    <div class="visitForm" style="display: none;">
+        <div class="alert alert-success noteFormSaved" role="alert" style="display: none">Visite programmée</div>
+        {{ form_start(visitForm, {'action': path('saveOffer', {'id' : offer.id }), 'method': 'POST', 'attr': {'class': 'formVisit'}}) }}
+        <div class="form_row">
+            <label class="required">Date de visite: </label>
+            {{ form_errors(visitForm) }}
+            {{ form_widget(visitForm.visitDate, { 'attr': {'form-control': 'calendar', 'rows': '3'} }) }}
+            <input type="button" id="offerNoteValid" class="btn btn-primary" value="Programmer" />
+        </div>
+        {{ form_end(visitForm) }}
+    </div>
+{% endspaceless %}
