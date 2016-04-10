@@ -82,23 +82,15 @@ class ParuvenduCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $description = $this->nodeFilter($this->crawler, '.im12_txt_ann', $url);
+        $description = $description ? $description->text() : '';
 
-            $description = $this->nodeFilter($this->crawler, '.im12_txt_ann', $url);
-            $description = $description ? $description->text() : '';
+        $images = $this->fetchImages();
 
-            $images = $this->fetchImages();
+        $price = $this->nodeFilter($this->crawler, '#autoprix', $url);
+        $price = $price ? $price->text() : '';
 
-            $price = $this->nodeFilter($this->crawler, '#autoprix', $url);
-            $price = $price ? $price->text() : '';
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
-        }
-
-        return 0;
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
     }
 
     protected function fetchImages()

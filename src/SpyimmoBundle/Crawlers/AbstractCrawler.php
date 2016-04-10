@@ -3,8 +3,7 @@
 namespace SpyimmoBundle\Crawlers;
 
 use Goutte\Client;
-use GuzzleHttp\Exception\RequestException;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use GuzzleHttp\Exception\TransferException;
 use Symfony\Component\DomCrawler\Crawler;
 use SpyimmoBundle\Logger\SpyimmoLogger;
 use SpyimmoBundle\Manager\OfferManager;
@@ -67,7 +66,7 @@ abstract class AbstractCrawler
             $this->searchUrl = $this->searchUrl . ($params ? '&'.$params : '');
             try {
                 $this->crawler = $this->client->request('GET', $this->searchUrl);
-            } catch (RequestException $e) {
+            } catch (TransferException $e) {
                 $this->spyimmoLogger->logError(sprintf("EXCEPTION: %s\n", $e->getMessage()));
 
                 return 0;
@@ -83,6 +82,14 @@ abstract class AbstractCrawler
             $this->spyimmoLogger->logInfo(sprintf('   <%s>Fetching new url [%s]</%s>', 'info', substr($url, 0, 120), 'info'));
         } else {
             $this->spyimmoLogger->logDebug(sprintf('   <%s>Fetching url [%s]</%s>', 'comment', substr($url, 0, 120), 'comment'));
+        }
+
+        if($isNew) {
+            try {
+                $this->crawler = $this->client->request('GET', $url);
+            } catch (TransferException $e) {
+                echo sprintf("[%s] unable to parse %s: %s\n", $this->name, $url, $e->getMessage());
+            }
         }
 
         return $isNew;

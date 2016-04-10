@@ -71,40 +71,32 @@ class ExplorimoCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $fullTitle = $this->nodeFilter($this->crawler, '.container-main-informations h1', $url);
+        $title = $fullTitle ? $fullTitle->text() : $title;
 
-            $fullTitle = $this->nodeFilter($this->crawler, '.container-main-informations h1', $url);
-            $title = $fullTitle ? $fullTitle->text() : $title;
+        $description = $this->nodeFilter($this->crawler, '.container-main .description', $url);
+        $description = $description ? $description->text() : '';
 
-            $description = $this->nodeFilter($this->crawler, '.container-main .description', $url);
-            $description = $description ? $description->text() : '';
+        $descriptionBis = $this->nodeFilter($this->crawler, '.container-main .features', $url);
+        $description .= $descriptionBis ? $descriptionBis->text() : '';
 
-            $descriptionBis = $this->nodeFilter($this->crawler, '.container-main .features', $url);
-            $description .= $descriptionBis ? $descriptionBis->text() : '';
-
-            $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.slides li a img', $url);
-            if($imageNodes) {
-                $imageNodes->each(
-                    function (Crawler $node) use (&$images) {
-                        $images[] = $node->attr('src');
-                    }
-                );
-            }
-
-            $price = $this->nodeFilter($this->crawler, '.container-main-informations .price', $url);
-            $price = $price ? $price->text() : '';
-
-            // get Contact Phone Number via API
-            $tel = $this->fetchTel($url);
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
+        $images = [];
+        $imageNodes = $this->nodeFilter($this->crawler, '.slides li a img', $url);
+        if($imageNodes) {
+            $imageNodes->each(
+                function (Crawler $node) use (&$images) {
+                    $images[] = $node->attr('src');
+                }
+            );
         }
 
-        return 0;
+        $price = $this->nodeFilter($this->crawler, '.container-main-informations .price', $url);
+        $price = $price ? $price->text() : '';
+
+        // get Contact Phone Number via API
+        $tel = $this->fetchTel($url);
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
     }
 
     protected function fetchTel($url)

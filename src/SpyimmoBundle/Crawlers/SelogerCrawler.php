@@ -66,45 +66,37 @@ class SelogerCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $fullTitle = $this->nodeFilter($this->crawler, 'h1.detail-title', $url);
+        $title = $fullTitle ? $fullTitle->text() : $title;
 
-            $fullTitle = $this->nodeFilter($this->crawler, 'h1.detail-title', $url);
-            $title = $fullTitle ? $fullTitle->text() : $title;
+        $description = $this->nodeFilter($this->crawler, '.detail__description .description', $url);
+        $description = $description ? $description->text() : '';
 
-            $description = $this->nodeFilter($this->crawler, '.detail__description .description', $url);
-            $description = $description ? $description->text() : '';
-
-            $descriptionBis = $this->nodeFilter($this->crawler, '.detail__description .description-liste li', $url);
-            if ($descriptionBis) {
-                $descriptionBis->each(
-                  function (Crawler $node) use (&$description) {
-                      $description .= ' ' . $node->text();
-                  }
-                );
-            }
-
-            $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.carrousel_image img', $url);
-            if($imageNodes) {
-                $imageNodes->each(
-                    function (Crawler $node) use (&$images) {
-                        $images[] = $node->attr('src');
-                    }
-                );
-            }
-
-            $price = $this->nodeFilter($this->crawler, '#price', $url);
-            $price = $price ? $price->text() : '';
-
-            $tel = $this->nodeFilter($this->crawler, '.detail__description .action__detail-tel span', $url);
-            $tel = $tel ? $tel->text() : '';
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
+        $descriptionBis = $this->nodeFilter($this->crawler, '.detail__description .description-liste li', $url);
+        if ($descriptionBis) {
+            $descriptionBis->each(
+              function (Crawler $node) use (&$description) {
+                  $description .= ' ' . $node->text();
+              }
+            );
         }
 
-        return 0;
+        $images = [];
+        $imageNodes = $this->nodeFilter($this->crawler, '.carrousel_image img', $url);
+        if($imageNodes) {
+            $imageNodes->each(
+                function (Crawler $node) use (&$images) {
+                    $images[] = $node->attr('src');
+                }
+            );
+        }
+
+        $price = $this->nodeFilter($this->crawler, '#price', $url);
+        $price = $price ? $price->text() : '';
+
+        $tel = $this->nodeFilter($this->crawler, '.detail__description .action__detail-tel span', $url);
+        $tel = $tel ? $tel->text() : '';
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
     }
 }

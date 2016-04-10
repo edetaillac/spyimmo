@@ -59,35 +59,27 @@ class FonciaCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $fullTitle = $this->nodeFilter($this->crawler, '.Content-overflow .OfferTop-head h1', $url);
+        $title = $fullTitle ? $fullTitle->text() : $title;
 
-            $fullTitle = $this->nodeFilter($this->crawler, '.Content-overflow .OfferTop-head h1', $url);
-            $title = $fullTitle ? $fullTitle->text() : $title;
+        $descriptionBlock = $this->nodeFilter($this->crawler, '.Content-overflow .OfferDetails', $url);
+        $description = $this->nodeFilter($descriptionBlock->first(), '.OfferDetails-content', $url);
+        $description = $description ? $description->text() : '';
 
-            $descriptionBlock = $this->nodeFilter($this->crawler, '.Content-overflow .OfferDetails', $url);
-            $description = $this->nodeFilter($descriptionBlock->first(), '.OfferDetails-content', $url);
-            $description = $description ? $description->text() : '';
-
-            $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.OfferSlider .OfferSlider-main-slides li:not(.clone) img', $url);
-            if($imageNodes) {
-                $imageNodes->each(
-                    function (Crawler $node) use (&$images) {
-                        $images[] = $node->attr('src');
-                    }
-                );
-            }
-
-            $price = $this->nodeFilter($this->crawler, '.Content-main .OfferTop-price', $url);
-            $price = $price ? $price->text() : '';
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
+        $images = [];
+        $imageNodes = $this->nodeFilter($this->crawler, '.OfferSlider .OfferSlider-main-slides li:not(.clone) img', $url);
+        if($imageNodes) {
+            $imageNodes->each(
+                function (Crawler $node) use (&$images) {
+                    $images[] = $node->attr('src');
+                }
+            );
         }
 
-        return 0;
+        $price = $this->nodeFilter($this->crawler, '.Content-main .OfferTop-price', $url);
+        $price = $price ? $price->text() : '';
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
     }
 
     protected function transformFonciaUrl($criterias)

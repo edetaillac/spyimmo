@@ -58,47 +58,39 @@ class FnaimCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $fullTitle = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche h1', $url);
+        $title = $fullTitle ? $fullTitle->text() : $title;
 
-            $fullTitle = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche h1', $url);
-            $title = $fullTitle ? $fullTitle->text() : $title;
+        $description = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche .description p', $url);
+        $description = $description ? $description->text() : '';
 
-            $description = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche .description p', $url);
-            $description = $description ? $description->text() : '';
-
-            $descriptionBisBlock = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche .caracteristique li');
-            $descriptionBis = $this->nodeFilter($descriptionBisBlock->first(), 'li');
-            if ($descriptionBis) {
-                $descriptionBis->each(
-                  function (Crawler $node) use (&$description) {
-                      $description .= ' ' . $node->text();
-                  }
-                );
-            }
-
-            $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche #diapo_annonce .carouselSync img', $url);
-            if($imageNodes) {
-                $imageNodes->each(
-                    function (Crawler $node) use (&$images) {
-                        $images[] = $node->attr('src');
-                    }
-                );
-            }
-
-            $price = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche .entete h3 span', $url);
-            $price = $price ? $price->text() : '';
-
-            $tel = $this->nodeFilter($this->crawler, '#contenu .actions #agence_call', $url);
-            $tel = $tel ? $tel->text() : '';
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
+        $descriptionBisBlock = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche .caracteristique li');
+        $descriptionBis = $this->nodeFilter($descriptionBisBlock->first(), 'li');
+        if ($descriptionBis) {
+            $descriptionBis->each(
+              function (Crawler $node) use (&$description) {
+                  $description .= ' ' . $node->text();
+              }
+            );
         }
 
-        return 0;
+        $images = [];
+        $imageNodes = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche #diapo_annonce .carouselSync img', $url);
+        if($imageNodes) {
+            $imageNodes->each(
+                function (Crawler $node) use (&$images) {
+                    $images[] = $node->attr('src');
+                }
+            );
+        }
+
+        $price = $this->nodeFilter($this->crawler, '#contenu .annonce_fiche .entete h3 span', $url);
+        $price = $price ? $price->text() : '';
+
+        $tel = $this->nodeFilter($this->crawler, '#contenu .actions #agence_call', $url);
+        $tel = $tel ? $tel->text() : '';
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
     }
 
     protected function transformFnaimUrl()

@@ -66,39 +66,30 @@ class OmmiCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
-
-            $description = '';
-
-            $descriptionBis = $this->nodeFilter($this->crawler, '.table-discription .cellright p', $url);
-            if ($descriptionBis) {
-                $descriptionBis->each(
-                    function (Crawler $node) use (&$description) {
-                        $description .= ' ' . $node->text();
-                    }
-                );
-            }
-
-            $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.tab-annonce-photo .l-sider-image-container img', $url);
-            if($imageNodes) {
-                $imageNodes->each(
-                    function (Crawler $node) use (&$images) {
-                        $images[] = $node->attr('src');
-                    }
-                );
-            }
-
-            $price = $this->nodeFilter($this->crawler, '.box-price .price', $url);
-            $price = $price ? $price->text() : '';
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
+        $description = '';
+        $descriptionBis = $this->nodeFilter($this->crawler, '.table-discription .cellright p', $url);
+        if ($descriptionBis) {
+            $descriptionBis->each(
+                function (Crawler $node) use (&$description) {
+                    $description .= ' ' . $node->text();
+                }
+            );
         }
 
+        $images = [];
+        $imageNodes = $this->nodeFilter($this->crawler, '.tab-annonce-photo .l-sider-image-container img', $url);
+        if($imageNodes) {
+            $imageNodes->each(
+                function (Crawler $node) use (&$images) {
+                    $images[] = $node->attr('src');
+                }
+            );
+        }
 
-        return 0;
+        $price = $this->nodeFilter($this->crawler, '.box-price .price', $url);
+        $price = $price ? $price->text() : '';
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
+
     }
 }

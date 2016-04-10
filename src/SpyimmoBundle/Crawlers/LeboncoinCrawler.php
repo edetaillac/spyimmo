@@ -100,36 +100,28 @@ class LeboncoinCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $description = $this->nodeFilter($this->crawler, '.properties_description .value', $url);
+        $description = $description ? $description->text() : '';
 
-            $description = $this->nodeFilter($this->crawler, '.properties_description .value', $url);
-            $description = $description ? $description->text() : '';
-
-            $descriptionBis = $this->nodeFilter($this->crawler, '.properties .line:not(.properties_description)', $url);
-            if ($descriptionBis) {
-                $descriptionBis->each(
-                  function (Crawler $node) use (&$description) {
-                      $description .= ' ' . $node->text();
-                  }
-                );
-            }
-            $description = $this->removeDescriptionInfo($description);
-
-            $images = $this->fetchImages();
-
-            $price = $this->nodeFilter($this->crawler, '.item_price .value', $url);
-            $price = $price ? $price->text() : '';
-
-            // get Contact Phone Number via API
-            $tel = $this->fetchTel($url);
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
+        $descriptionBis = $this->nodeFilter($this->crawler, '.properties .line:not(.properties_description)', $url);
+        if ($descriptionBis) {
+            $descriptionBis->each(
+              function (Crawler $node) use (&$description) {
+                  $description .= ' ' . $node->text();
+              }
+            );
         }
+        $description = $this->removeDescriptionInfo($description);
 
-        return 0;
+        $images = $this->fetchImages();
+
+        $price = $this->nodeFilter($this->crawler, '.item_price .value', $url);
+        $price = $price ? $price->text() : '';
+
+        // get Contact Phone Number via API
+        $tel = $this->fetchTel($url);
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
     }
 
     protected function fetchImages()

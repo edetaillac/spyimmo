@@ -3,6 +3,7 @@
 namespace SpyimmoBundle\Crawlers;
 
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DomCrawler\Crawler;
 use SpyimmoBundle\Services\CrawlerService;
@@ -70,48 +71,38 @@ class AvendrealouerCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $fullTitle = $this->nodeFilter($this->crawler, '.header h1 .mainh1', $url);
+        $title = $fullTitle ? $fullTitle->text() : $title;
 
-            $fullTitle = $this->nodeFilter($this->crawler, '.header h1 .mainh1', $url);
-            $title = $fullTitle ? $fullTitle->text() : $title;
+        $description = $this->nodeFilter($this->crawler, '.col-main #propertyDesc', $url);
+        $description = $description ? $description->text() : '';
 
-            $description = $this->nodeFilter($this->crawler, '.col-main #propertyDesc', $url);
-            $description = $description ? $description->text() : '';
-
-            $descriptionBis = $this->nodeFilter($this->crawler, '.col-main .descCtnr #desc-items li', $url);
-            if ($descriptionBis) {
-                $descriptionBis->each(
-                  function (Crawler $node) use (&$description) {
-                      $description .= ' ' . $node->text();
-                  }
-                );
-            }
-
-            $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.topSummary .slideCtnr ul img', $url);
-            if($imageNodes) {
-                $imageNodes->each(
-                    function (Crawler $node) use (&$images) {
-                        $images[] = $node->attr('src');
-                    }
-                );
-            }
-
-            $price = $this->nodeFilter($this->crawler, '.topSummary .display-price', $url);
-            $price = $price ? $price->text() : '';
-
-            $tel = $this->nodeFilter($this->crawler, '.rightFormCtnr #display-phonenumber-1', $url);
-            $tel = $tel ? $tel->text() : '';
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", $this->name, $url, $e->getMessage());
-        } catch (RequestException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", $this->name, $url, $e->getMessage());
+        $descriptionBis = $this->nodeFilter($this->crawler, '.col-main .descCtnr #desc-items li', $url);
+        if ($descriptionBis) {
+            $descriptionBis->each(
+              function (Crawler $node) use (&$description) {
+                  $description .= ' ' . $node->text();
+              }
+            );
         }
 
+        $images = [];
+        $imageNodes = $this->nodeFilter($this->crawler, '.topSummary .slideCtnr ul img', $url);
+        if($imageNodes) {
+            $imageNodes->each(
+                function (Crawler $node) use (&$images) {
+                    $images[] = $node->attr('src');
+                }
+            );
+        }
 
-        return 0;
+        $price = $this->nodeFilter($this->crawler, '.topSummary .display-price', $url);
+        $price = $price ? $price->text() : '';
+
+        $tel = $this->nodeFilter($this->crawler, '.rightFormCtnr #display-phonenumber-1', $url);
+        $tel = $tel ? $tel->text() : '';
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
+
     }
 }

@@ -86,31 +86,24 @@ class BaoCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $description = $this->nodeFilter($this->crawler, '.annonce-description', $url);
+        $description = $description ? $description->text() : '';
 
-            $description = $this->nodeFilter($this->crawler, '.annonce-description', $url);
-            $description = $description ? $description->text() : '';
-
-            $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.annonce-images img', $url);
-            if($imageNodes) {
-                $imageNodes->each(
-                    function (Crawler $node) use (&$images) {
-                        $images[] = $node->attr('src');
-                    }
-                );
-            }
-
-            $price = $this->nodeFilter($this->crawler, '.annonce-view .price', $url);
-            $price = $price ? $price->text() : '';
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
+        $images = [];
+        $imageNodes = $this->nodeFilter($this->crawler, '.annonce-images img', $url);
+        if($imageNodes) {
+            $imageNodes->each(
+                function (Crawler $node) use (&$images) {
+                    $images[] = $node->attr('src');
+                }
+            );
         }
 
-        return 0;
+        $price = $this->nodeFilter($this->crawler, '.annonce-view .price', $url);
+        $price = $price ? $price->text() : '';
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price);
+
     }
 
     public function isScheduled()

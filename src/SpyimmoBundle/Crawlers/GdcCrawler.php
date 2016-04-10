@@ -119,39 +119,30 @@ class GdcCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $description = $this->nodeFilter($this->crawler, '#ad-description', $url);
+        $description = $description ? $description->text() : '';
 
-            $description = $this->nodeFilter($this->crawler, '#ad-description', $url);
-            $description = $description ? $description->text() : '';
-
-            $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.ad-images img', $url);
-            if($imageNodes) {
-                $imageNodes->each(
-                    function (Crawler $node) use (&$images) {
-                        $images[] = 'https:' . $node->attr('src');
-                    }
-                );
-            }
-
-            $price = $this->nodeFilter($this->crawler, '.ad-price', $url);
-            $price = $price ? $price->text() : '';
-
-            $tel = $this->nodeFilter($this->crawler, '#contentInner #owner-phone span.btn-tip', $url);
-            $tel = $tel ? $tel->text() : null;
-
-            if($price != '' && intval(preg_replace('/\s/', '', $price)) > $this->criterias[CrawlerService::MAX_BUDGET]) {
-                return 0;
-            }
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
+        $images = [];
+        $imageNodes = $this->nodeFilter($this->crawler, '.ad-images img', $url);
+        if($imageNodes) {
+            $imageNodes->each(
+                function (Crawler $node) use (&$images) {
+                    $images[] = 'https:' . $node->attr('src');
+                }
+            );
         }
 
+        $price = $this->nodeFilter($this->crawler, '.ad-price', $url);
+        $price = $price ? $price->text() : '';
 
-        return 0;
+        $tel = $this->nodeFilter($this->crawler, '#contentInner #owner-phone span.btn-tip', $url);
+        $tel = $tel ? $tel->text() : null;
+
+        if($price != '' && intval(preg_replace('/\s/', '', $price)) > $this->criterias[CrawlerService::MAX_BUDGET]) {
+            return 0;
+        }
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
     }
 
     public function isScheduled()

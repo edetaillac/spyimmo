@@ -76,36 +76,28 @@ class PapCrawler extends AbstractCrawler
             return 0;
         }
 
-        try {
-            $this->crawler = $this->client->request('GET', $url);
+        $description = $this->nodeFilter($this->crawler, '.text-annonce-container', $url);
+        $description = $description ? $description->text() : '';
 
-            $description = $this->nodeFilter($this->crawler, '.text-annonce-container', $url);
-            $description = $description ? $description->text() : '';
+        $descriptionBis = $this->nodeFilter($this->crawler, '.footer-descriptif', $url);
+        $description .= $descriptionBis ? $descriptionBis->text() : '';
 
-            $descriptionBis = $this->nodeFilter($this->crawler, '.footer-descriptif', $url);
-            $description .= $descriptionBis ? $descriptionBis->text() : '';
-
-            $images = [];
-            $imageNodes = $this->nodeFilter($this->crawler, '.showcase-slide .showcase-content img', $url);
-            if($imageNodes) {
-                $imageNodes->each(
-                    function (Crawler $node) use (&$images) {
-                        $images[] = $node->attr('src');
-                    }
-                );
-            }
-
-            $price = $this->nodeFilter($this->crawler, '.descriptif-container .prix', $url);
-            $price = $price ? $price->text() : '';
-
-            $tel = $this->nodeFilter($this->crawler, '.contact-proprietaire-simple span.telephone', $url);
-            $tel = $tel && (count($tel) > 0) ? $tel->first()->text() : null;
-
-            return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
-        } catch (\InvalidArgumentException $e) {
-            echo sprintf("[%s] unable to parse %s: %s\n", self::NAME, $url, $e->getMessage());
+        $images = [];
+        $imageNodes = $this->nodeFilter($this->crawler, '.showcase-slide .showcase-content img', $url);
+        if($imageNodes) {
+            $imageNodes->each(
+                function (Crawler $node) use (&$images) {
+                    $images[] = $node->attr('src');
+                }
+            );
         }
 
-        return 0;
+        $price = $this->nodeFilter($this->crawler, '.descriptif-container .prix', $url);
+        $price = $price ? $price->text() : '';
+
+        $tel = $this->nodeFilter($this->crawler, '.contact-proprietaire-simple span.telephone', $url);
+        $tel = $tel && (count($tel) > 0) ? $tel->first()->text() : null;
+
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
     }
 }
