@@ -50,7 +50,7 @@ class OfferRepository extends EntityRepository
           ->orderBy('o.created', 'DESC')
           ->setMaxResults(150);
 
-        return $query->getQuery()->useResultCache(true, 300)->getResult();
+        return $query->getQuery()->getResult();
     }
 
     public function getOffer($id)
@@ -73,6 +73,18 @@ class OfferRepository extends EntityRepository
           ->setParameter('description', "%$description%");
 
         return $query->getQuery()->getResult();
+    }
+
+    public function markAsViewed($id)
+    {
+        $qB = $this->getEntityManager()->createQueryBuilder();
+        $qB->update('SpyimmoBundle:Offer', 'o')
+            ->set('o.viewed', ':viewed')
+            ->where('o.id = :id')
+            ->setParameter('viewed', 1)
+            ->setParameter('id', $id);
+
+        return $qB->getQuery()->execute();
     }
 
     public function toggleFavorite($id, $value)

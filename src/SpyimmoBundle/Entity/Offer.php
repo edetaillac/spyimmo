@@ -93,6 +93,11 @@ class Offer
     protected $contacted;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $viewed;
+
+    /**
      * @var datetime $contactedAt
      *
      * @ORM\Column(type="datetime", nullable=true)
@@ -101,6 +106,9 @@ class Offer
 
     public function __construct() {
         $this->pictures = new ArrayCollection();
+        $this->favorite = 0;
+        $this->contacted = 0;
+        $this->viewed = 0;
     }
 
     /**
@@ -448,6 +456,22 @@ class Offer
     public function setPictures($pictures)
     {
         $this->pictures = $pictures;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getViewed()
+    {
+        return $this->viewed;
+    }
+
+    /**
+     * @param mixed $viewed
+     */
+    public function setViewed($viewed)
+    {
+        $this->viewed = $viewed;
     }
 
 

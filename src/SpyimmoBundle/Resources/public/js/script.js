@@ -6,7 +6,7 @@ $(function () {
 
 	 $('#offerTable').DataTable({
 		"lengthMenu": [[25, 50, -1], [25, 50, "All"]],
-	 	"order": [[ 7, "desc" ]],
+	 	"order": [[ 8, "desc" ]],
         "language": {
              "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
         }
@@ -14,11 +14,14 @@ $(function () {
 
 
     $(document).on("click", ".offerLink", function () {
-        console.log('get');
+        var link = $(this);
         $.ajax({
-            url: Routing.generate('detail', {id: $(this).closest('tr').data('id')})
+            url: Routing.generate('detail', {id: link.closest('tr').data('id')})
         }).done(function (html) {
             $('.modal-content').html(html);
+            var closestTr = link.closest('tr');
+            closestTr.removeClass('warning');
+            closestTr.find('td:first span.glyphicon-flag').remove();
         });
     });
 
@@ -26,7 +29,7 @@ $(function () {
     $(document).on("click", ".favorite", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('favorite', {id: $(this).closest('tr').data('id')})
+            url: Routing.generate('favorite', {id: button.closest('tr').data('id')})
         }).done(function () {
             button.parent().parent().addClass("success");
             button.html("<span class=\"glyphicon glyphicon-star-empty\" aria-hidden=\"true\"></span>");
@@ -40,7 +43,7 @@ $(function () {
     $(document).on("click", ".unfavorite", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('unfavorite', {id: $(this).closest('tr').data('id')})
+            url: Routing.generate('unfavorite', {id: button.closest('tr').data('id')})
         }).done(function () {
             button.parent().parent().removeClass("success");
             button.html("<span class=\"glyphicon glyphicon-star\" aria-hidden=\"true\"></span>");
@@ -54,7 +57,7 @@ $(function () {
     $(document).on("click", ".hideAction", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('hide', {id: $(this).closest('tr').data('id')})
+            url: Routing.generate('hide', {id: button.closest('tr').data('id')})
         }).done(function () {
             button.parent().parent().hide('slow');
         });
@@ -63,7 +66,7 @@ $(function () {
     $(document).on("click", ".unhideAction", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('unhide', {id: $(this).closest('tr').data('id')})
+            url: Routing.generate('unhide', {id: button.closest('tr').data('id')})
         }).done(function () {
             button.parent().parent().hide('slow');
         });
@@ -73,7 +76,7 @@ $(function () {
         var button = $(this);
         if (confirm("Are you sure to mark this offer as contacted ?")) {
             $.ajax({
-                url: Routing.generate('contacted', {id: $(this).closest('tr').data('id')})
+                url: Routing.generate('contacted', {id: button.closest('tr').data('id')})
             }).done(function () {
                 button.parent().parent().find('.glyphicon-envelope').show();
                 button.hide();

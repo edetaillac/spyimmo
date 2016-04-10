@@ -29,6 +29,9 @@ class DefaultController extends Controller
     {
         $repository = $this->get('offer.repository');
         $offer = $repository->getOffer($id);
+        if(!$offer->getViewed()) {
+            $repository->markAsViewed($id);
+        }
 
         return $this->render('@Spyimmo/Default/offer.html.twig', array('offer' => $offer));
     }

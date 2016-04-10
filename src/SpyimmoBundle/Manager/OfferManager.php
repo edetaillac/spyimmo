@@ -53,8 +53,6 @@ class OfferManager
             $offer->setUrl($url);
             $offer->setLabel($name);
             $offer->setSuspicious($isSuspicious);
-            $offer->setFavorite(0);
-            $offer->setContacted(0);
 
             if ($tel) {
                 $offer->setTel($this->cleanTel($tel));
@@ -73,7 +71,7 @@ class OfferManager
             }
             $isHidden = $this->isHidden($postalCode);
             $offer->setHidden($isHidden);
-            
+
             if ($surface) {
                 $offer->setSurface(intval($surface));
             } elseif (($surface = $this->extractSurface($info)) > 0) {

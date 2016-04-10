@@ -8,6 +8,7 @@
         <table id="offerTable" class="table table-striped">
             <thead>
             <tr>
+                <th></th>
                 <th class="hidden-xs">Image</th>
                 <th>Titre</th>
                 <th>Surface</th>
@@ -19,7 +20,16 @@
             </tr>
             </thead>
             {% for offer in offers %}
-                <tr data-id="{{ offer.id }}" class="{% if offer.favorite %}success{% endif %} {% if offer.hidden %}danger{% endif %}">
+                <tr data-id="{{ offer.id }}" class="{% if not offer.viewed %}warning{% endif %} {% if offer.favorite %}success{% endif %} {% if offer.hidden %}danger{% endif %}">
+                    <td>
+                        {% if offer.suspicious %}
+                            <span title="Suspecte" class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span>
+                        {% elseif offer.contacted %}
+                            <span title="{{ offer.contactedAt|date("d/m/Y H:i") }}" class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+                        {% elseif not offer.viewed %}
+                            <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+                        {% endif %}
+                    </td>
                     <td class="hidden-xs">
                         <a class="offerLink" target="_blank" data-toggle="modal" data-target="#myModal">
                             {% if offer.pictures|length > 0 %}
@@ -31,10 +41,6 @@
                         </a>
                     </td>
                     <td>
-                        {% if offer.suspicious %}
-                            <span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span>
-                        {% endif %}
-                        <span title="{{ offer.contactedAt|date("d/m/Y H:i") }}" class="glyphicon glyphicon-envelope {% if not offer.contacted %}hidden{% endif %}" aria-hidden="true"></span>
                         <a class="offerLink offerTitle" target="_blank" data-toggle="modal" data-target="#myModal" style="font-size: 12px">
                             {{ offer.title|e }}
                         </a>
