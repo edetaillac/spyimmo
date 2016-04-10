@@ -106,7 +106,7 @@
                 <argument>%bao_username%</argument>
             </call>
             <call method="setPassword">
-                <argument>%bao_password%%</argument>
+                <argument>%bao_password%</argument>
             </call>
             <tag name="offer.crawler"/>
         </service>

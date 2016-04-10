@@ -53,8 +53,8 @@ class BaoCrawler extends AbstractCrawler
           )
         );
 
-        $url = $this->generateUrl($this->searchUrl, $criterias);
-        $crawler = $this->client->request('GET', $url);
+        $this->searchUrl = $this->generateUrl($this->searchUrl, $criterias);
+        $crawler = $this->client->request('GET', $this->searchUrl);
 
         $offers = $this->nodeFilter($crawler, 'h2.title a');
         if ($offers) {

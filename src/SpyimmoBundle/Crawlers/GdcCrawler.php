@@ -138,7 +138,7 @@ class GdcCrawler extends AbstractCrawler
             $price = $this->nodeFilter($this->crawler, '.ad-price', $url);
             $price = $price ? $price->text() : '';
 
-            $tel = $this->nodeFilter($this->crawler, '.contentInner #owner-phone span.btn-tip', $url);
+            $tel = $this->nodeFilter($this->crawler, '#contentInner #owner-phone span.btn-tip', $url);
             $tel = $tel ? $tel->text() : null;
 
             if($price != '' && intval(preg_replace('/\s/', '', $price)) > $this->criterias[CrawlerService::MAX_BUDGET]) {

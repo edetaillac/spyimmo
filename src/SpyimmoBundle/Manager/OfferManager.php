@@ -32,6 +32,11 @@ class OfferManager
 
     public function createOffer($title, $description, array $images, $url, $name, $price = null, $postalCode = null, $surface = null, $tel = null)
     {
+        if(!$description && !$tel && !$price && count($images) == 0) {
+            $this->spyimmoLogger->logInfo(sprintf('   <comment>Not enough information to evaluate offer</comment>', $url));
+            return false;
+        }
+
         $info = $this->cleanString($title . ' ' . $description);
         $isSuspicious = false;
         $isHidden = false;
@@ -45,14 +50,6 @@ class OfferManager
             $offer = new Offer();
             $offer->setTitle($title);
             $offer->setDescription($description);
-
-            foreach($images as $image){
-                $picture = new Picture();
-                $picture->setSrc($image);
-                $picture->setOffer($offer);
-                $this->em->persist($picture);
-            }
-
             $offer->setUrl($url);
             $offer->setLabel($name);
             $offer->setSuspicious($isSuspicious);
@@ -76,12 +73,18 @@ class OfferManager
             }
             $isHidden = $this->isHidden($postalCode);
             $offer->setHidden($isHidden);
-
-
+            
             if ($surface) {
                 $offer->setSurface(intval($surface));
             } elseif (($surface = $this->extractSurface($info)) > 0) {
                 $offer->setSurface($surface);
+            }
+
+            foreach($images as $image){
+                $picture = new Picture();
+                $picture->setSrc($image);
+                $picture->setOffer($offer);
+                $this->em->persist($picture);
             }
 
             $this->em->persist($offer);
@@ -91,7 +94,6 @@ class OfferManager
                 return true;
             }
         }
-
 
         if($isSuspicious) {
             $this->spyimmoLogger->logInfo(sprintf('   <comment>Suspicious</comment>', $url));

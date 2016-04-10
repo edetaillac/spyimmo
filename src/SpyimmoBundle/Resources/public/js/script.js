@@ -26,7 +26,7 @@ $(function () {
     $(document).on("click", ".favorite", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('favorite', {id: $(this).data('id')})
+            url: Routing.generate('favorite', {id: $(this).closest('tr').data('id')})
         }).done(function () {
             button.parent().parent().addClass("success");
             button.html("<span class=\"glyphicon glyphicon-star-empty\" aria-hidden=\"true\"></span>");
@@ -40,7 +40,7 @@ $(function () {
     $(document).on("click", ".unfavorite", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('unfavorite', {id: $(this).data('id')})
+            url: Routing.generate('unfavorite', {id: $(this).closest('tr').data('id')})
         }).done(function () {
             button.parent().parent().removeClass("success");
             button.html("<span class=\"glyphicon glyphicon-star\" aria-hidden=\"true\"></span>");
@@ -54,7 +54,7 @@ $(function () {
     $(document).on("click", ".hideAction", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('hide', {id: $(this).data('id')})
+            url: Routing.generate('hide', {id: $(this).closest('tr').data('id')})
         }).done(function () {
             button.parent().parent().hide('slow');
         });
@@ -63,7 +63,7 @@ $(function () {
     $(document).on("click", ".unhideAction", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('unhide', {id: $(this).data('id')})
+            url: Routing.generate('unhide', {id: $(this).closest('tr').data('id')})
         }).done(function () {
             button.parent().parent().hide('slow');
         });
@@ -73,7 +73,7 @@ $(function () {
         var button = $(this);
         if (confirm("Are you sure to mark this offer as contacted ?")) {
             $.ajax({
-                url: Routing.generate('contacted', {id: $(this).data('id')})
+                url: Routing.generate('contacted', {id: $(this).closest('tr').data('id')})
             }).done(function () {
                 button.parent().parent().find('.glyphicon-envelope').show();
                 button.hide();
