@@ -14,7 +14,7 @@ class SelogerApiCrawler extends SelogerCrawler
 {
     const NAME = 'SeLogerApi';
 
-    const SEARCH_URL = 'http://ws.seloger.com/search.xml?idtt=1&idtypebien=1,9&cp=75&tri=initial&si_meuble=0';
+    const SEARCH_URL = 'http://ws.seloger.com/search_4.0.xml?idtt=1&idtypebien=1,9&cp=75&tri=d_dt_crea&si_meuble=0';
 
     public function __construct()
     {

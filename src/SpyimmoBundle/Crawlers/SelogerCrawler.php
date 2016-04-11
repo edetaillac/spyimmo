@@ -14,7 +14,7 @@ class SelogerCrawler extends AbstractCrawler
 {
     const NAME = 'SeLoger';
 
-    const SEARCH_URL = 'http://www.seloger.com/list.htm?idtt=1&idtypebien=1,9&cp=75&tri=initial&si_meuble=0';
+    const SEARCH_URL = 'http://www.seloger.com/list.htm?idtt=1&idtypebien=1,9&cp=75&tri=d_dt_crea&si_meuble=0';
 
     public function __construct()
     {
