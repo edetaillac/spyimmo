@@ -9,7 +9,7 @@
     {% endif %}
 
     <ul class="offerDetail">
-        <li><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> : {{ offer.created|date("Y-m-d H:i") }}</li>
+        <li><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> : {{ offer.created|date("d/m/Y H:i") }}</li>
         {% if offer.location %}
             <li><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> : {{ offer.location }} </li>
         {% endif %}

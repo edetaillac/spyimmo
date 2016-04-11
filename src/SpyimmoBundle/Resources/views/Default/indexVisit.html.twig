@@ -1,26 +1,25 @@
 {% extends 'SpyimmoBundle:Layouts:layout.html.twig' %}
 
-{% block title %}SpyImmo - Dernières offres{% endblock %}
+{% block title %}SpyImmo - Visites{% endblock %}
 
 {% block content %}
-    <br><br><br><h1>Dernières offres</h1>
+    <br><br><br><h1>Visites</h1>
     <div class="table-responsive">
-        <table id="offerTable" class="table table-striped">
+        <table id="visitTable" class="table table-striped">
             <thead>
             <tr>
                 <th class="hidden-xs">Image</th>
                 <th style="width: 25px;"></th>
+                <th style="width: 110px;">Date visite</th>
                 <th>Titre</th>
                 <th>Surface</th>
                 <th>Prix</th>
                 <th>Lieu</th>
-                <th class="hidden-xs">Action</th>
                 <th class="hidden-xs">Origine</th>
-                <th class="hidden-xs">Date</th>
             </tr>
             </thead>
             {% for offer in offers %}
-                <tr data-id="{{ offer.id }}" class="{% if not offer.viewed %}warning{% endif %} {% if offer.favorite %}success{% endif %} {% if offer.hidden %}danger{% endif %}">
+                <tr data-id="{{ offer.id }}" class="{% if offer.visitDate < date() %}expired{% endif %} info">
                     <td class="hidden-xs">
                         <a class="offerLink" target="_blank" data-toggle="modal" data-target="#myModal">
                             {% if offer.pictures|length > 0 %}
@@ -34,6 +33,9 @@
                     <td style="width: 25px;">
                         {% include "SpyimmoBundle:Default:offerIndexFlag.html.twig" with {'offer': offer} %}
                     </td>
+                    <td style="width: 110px;" class="offerVisit">
+                        {{ offer.visitDate|date("Y-m-d H:i") }}
+                    </td>
                     <td>
                         <a class="offerLink offerTitle" target="_blank" data-toggle="modal" data-target="#myModal">
                             {{ offer.title|e }}
@@ -42,11 +44,7 @@
                     <td>{% if offer.surface %} <span class="badge">{{ offer.surface|e }} m²</span>{% endif %}</td>
                     <td>{% if offer.price %} {{ offer.price|e }} €{% endif %}</td>
                     <td>{{ offer.location|e }}</td>
-                    <td class="hidden-xs">
-                        {% include "SpyimmoBundle:Default:offerIndexAction.html.twig" with {'offer': offer} %}
-                    </td>
                     <td class="hidden-xs offerLabel">{{ offer.label|e }}</td>
-                    <td class="hidden-xs offerCreated">{{ offer.created|date("Y-m-d H:i") }}</td>
                 </tr>
              {% endfor %}
         </table>

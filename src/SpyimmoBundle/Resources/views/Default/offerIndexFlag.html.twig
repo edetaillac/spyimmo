@@ -1,0 +1,15 @@
+{% if not offer.viewed %}
+    <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>&nbsp;
+{% endif %}
+{% if offer.suspicious %}
+    <span title="Suspecte" class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span>&nbsp;
+{% endif %}
+{% if offer.contacted %}
+    <span title="{{ offer.contactedAt|date("d/m/Y H:i") }}" class="glyphicon glyphicon-envelope" aria-hidden="true"></span>&nbsp;
+{% endif %}
+{% if offer.note %}
+    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>&nbsp;
+{% endif %}
+{% if offer.visitDate %}
+    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>&nbsp;
+{% endif %}

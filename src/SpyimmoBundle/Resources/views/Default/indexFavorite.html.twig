@@ -1,11 +1,11 @@
 {% extends 'SpyimmoBundle:Layouts:layout.html.twig' %}
 
-{% block title %}SpyImmo - Dernières offres{% endblock %}
+{% block title %}SpyImmo - Offres favorites{% endblock %}
 
 {% block content %}
-    <br><br><br><h1>Dernières offres</h1>
+    <br><br><br><h1>Offres favorites</h1>
     <div class="table-responsive">
-        <table id="offerTable" class="table table-striped">
+        <table id="favoriteTable" class="table table-striped">
             <thead>
             <tr>
                 <th class="hidden-xs">Image</th>
@@ -14,7 +14,6 @@
                 <th>Surface</th>
                 <th>Prix</th>
                 <th>Lieu</th>
-                <th class="hidden-xs">Action</th>
                 <th class="hidden-xs">Origine</th>
                 <th class="hidden-xs">Date</th>
             </tr>
@@ -42,9 +41,6 @@
                     <td>{% if offer.surface %} <span class="badge">{{ offer.surface|e }} m²</span>{% endif %}</td>
                     <td>{% if offer.price %} {{ offer.price|e }} €{% endif %}</td>
                     <td>{{ offer.location|e }}</td>
-                    <td class="hidden-xs">
-                        {% include "SpyimmoBundle:Default:offerIndexAction.html.twig" with {'offer': offer} %}
-                    </td>
                     <td class="hidden-xs offerLabel">{{ offer.label|e }}</td>
                     <td class="hidden-xs offerCreated">{{ offer.created|date("Y-m-d H:i") }}</td>
                 </tr>

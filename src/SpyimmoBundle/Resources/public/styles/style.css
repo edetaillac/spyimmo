@@ -27,6 +27,14 @@ ul.offerDetail li {
     font-size: 11px
 }
 
+.offerVisit {
+    font-weight: bold;
+}
+
+.offerTitle {
+    font-size: 13px;
+}
+
 .formVisit div, .formVisit button  {
     display: inline-block;
 }
@@ -36,4 +44,9 @@ ul.offerDetail li {
 }
 .formVisit button {
     margin-left: 10px;
+}
+
+.table-striped tbody tr.expired, .table-striped tbody tr.expired td, .table-striped tbody tr.expired td a {
+    background-color: grey;
+    color: #fff;
 }

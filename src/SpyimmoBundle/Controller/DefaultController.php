@@ -22,7 +22,7 @@ class DefaultController extends Controller
         $repository = $this->get('offer.repository');
         $offers = $repository->getOffers();
 
-        return $this->render('@Spyimmo/Default/index.html.twig', array('offers' => $offers, 'title' => 'Dernières offres'));
+        return $this->render('@Spyimmo/Default/index.html.twig', array('offers' => $offers));
     }
 
     /**
@@ -33,7 +33,7 @@ class DefaultController extends Controller
         $repository = $this->get('offer.repository');
         $offers = $repository->getFavoriteOffers();
 
-        return $this->render('@Spyimmo/Default/index.html.twig', array('offers' => $offers, 'title' => 'Offres favorites'));
+        return $this->render('@Spyimmo/Default/indexFavorite.html.twig', array('offers' => $offers));
     }
 
     /**
@@ -44,7 +44,7 @@ class DefaultController extends Controller
         $repository = $this->get('offer.repository');
         $offers = $repository->getVisitOffers();
 
-        return $this->render('@Spyimmo/Default/index.html.twig', array('offers' => $offers, 'title' => 'Visites'));
+        return $this->render('@Spyimmo/Default/indexVisit.html.twig', array('offers' => $offers));
     }
 
     /**

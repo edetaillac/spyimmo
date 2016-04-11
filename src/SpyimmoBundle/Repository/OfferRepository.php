@@ -14,6 +14,7 @@ class OfferRepository extends EntityRepository
           ->leftJoin('o.pictures', 'p')
           ->addSelect('p')
           ->where('o.favorite = :favorite')
+          ->andWhere('o.visitDate IS NULL')
           ->andWhere('o.hidden = :hidden')
           ->setParameter('favorite', 1)
           ->setParameter('hidden', 0)
@@ -56,9 +57,11 @@ class OfferRepository extends EntityRepository
           ->leftJoin('o.pictures', 'p')
           ->addSelect('p')
           ->where('o.hidden = :hidden')
+          ->andWhere('o.favorite = :favorite')
           ->andWhere('o.suspicious = :suspicious')
           ->setParameter('hidden', 0)
           ->setParameter('suspicious', 0)
+          ->setParameter('favorite', 0)
           ->orderBy('o.created', 'DESC')
           ->setMaxResults(150);
 

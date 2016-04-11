@@ -4,14 +4,26 @@ $(function () {
         "searching": true
     } );
 
+    var lengthMenu = [[25, 50, -1], [25, 50, "All"]];
+    var language = {"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"};
+
 	 $('#offerTable').DataTable({
-		"lengthMenu": [[25, 50, -1], [25, 50, "All"]],
+		"lengthMenu": lengthMenu,
 	 	"order": [[ 8, "desc" ]],
-        "language": {
-             "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
-        }
+        "language": language
 	 });
 
+    $('#visitTable').DataTable({
+        "lengthMenu": lengthMenu,
+        "order": [[ 2, "desc" ]],
+        "language": language
+    });
+
+    $('#favoriteTable').DataTable({
+        "lengthMenu": lengthMenu,
+        "order": [[ 7, "desc" ]],
+        "language": language
+    });
 
     $(document).on("click", ".offerLink", function () {
         var link = $(this);
@@ -21,7 +33,7 @@ $(function () {
             $('.modal-content').html(html);
             var closestTr = link.closest('tr');
             closestTr.removeClass('warning');
-            closestTr.find('td:first span.glyphicon-flag').remove();
+            closestTr.find('span.glyphicon-flag').remove();
         });
     });
 
