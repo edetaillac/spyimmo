@@ -32,6 +32,8 @@ class BaoCrawler extends AbstractCrawler
 
     public function getOffers($criterias, $excludedCrawlers = array())
     {
+        parent::getOffers($criterias, $excludedCrawlers);
+        
         $this->searchUrl = sprintf(self::SEARCH_URL, CrawlerService::MAX_BUDGET, CrawlerService::MIN_SURFACE);
 
         $this->client = new Client(['timeout' => self::TIMEOUT]);

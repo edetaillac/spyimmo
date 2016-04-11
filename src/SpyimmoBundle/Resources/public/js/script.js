@@ -28,7 +28,7 @@ $(function () {
     $(document).on("click", ".favorite", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('favorite', {id: button.closest('tr').data('id')})
+            url: Routing.generate('favorite', {id: button.data('id')})
         }).done(function () {
             button.parent().parent().addClass("success");
             button.html("<span class=\"glyphicon glyphicon-star-empty\" aria-hidden=\"true\"></span>");
@@ -42,7 +42,7 @@ $(function () {
     $(document).on("click", ".unfavorite", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('unfavorite', {id: button.closest('tr').data('id')})
+            url: Routing.generate('unfavorite', {id: button.data('id')})
         }).done(function () {
             button.parent().parent().removeClass("success");
             button.html("<span class=\"glyphicon glyphicon-star\" aria-hidden=\"true\"></span>");
@@ -56,7 +56,7 @@ $(function () {
     $(document).on("click", ".hideAction", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('hide', {id: button.closest('tr').data('id')})
+            url: Routing.generate('hide', {id: button.data('id')})
         }).done(function () {
             button.parent().parent().hide('slow');
         });
@@ -65,7 +65,7 @@ $(function () {
     $(document).on("click", ".unhideAction", function () {
         var button = $(this);
         $.ajax({
-            url: Routing.generate('unhide', {id: button.closest('tr').data('id')})
+            url: Routing.generate('unhide', {id: button.data('id')})
         }).done(function () {
             button.parent().parent().hide('slow');
         });
@@ -75,7 +75,7 @@ $(function () {
         var button = $(this);
         if (confirm("Are you sure to mark this offer as contacted ?")) {
             $.ajax({
-                url: Routing.generate('contacted', {id: button.closest('tr').data('id')})
+                url: Routing.generate('contacted', {id: button.data('id')})
             }).done(function () {
                 button.parent().parent().find('.glyphicon-envelope').show();
                 button.hide();

@@ -139,10 +139,10 @@ class GdcCrawler extends AbstractCrawler
         $tel = $tel ? $tel->text() : null;
 
         if($price != '' && intval(preg_replace('/\s/', '', $price)) > $this->criterias[CrawlerService::MAX_BUDGET]) {
-            return 0;
+            $isBlacklisted = 1;
         }
 
-        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel);
+        return $this->offerManager->createOffer($title, $description, $images, $url, self::NAME, $price, null, null, $tel, $isBlacklisted);
     }
 
     public function isScheduled()

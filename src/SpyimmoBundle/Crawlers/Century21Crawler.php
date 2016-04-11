@@ -14,7 +14,7 @@ use SpyimmoBundle\Services\CrawlerService;
 class Century21Crawler extends AbstractCrawler
 {
     const NAME = 'Century21';
-    const SITE_URL = 'http://www.century21.fr/';
+    const SITE_URL = 'http://www.century21.fr';
 
     const SEARCH_URL = 'http://www.century21.fr/annonces/location-appartement/v-paris/s-%s-/st-0-/b-0-%s/p-%s/page-1/';
 

@@ -28,12 +28,17 @@
             {% for offer in offers %}
                 <tr data-id="{{ offer.id }}" class="{% if not offer.viewed %}warning{% endif %} {% if offer.favorite %}success{% endif %} {% if offer.hidden %}danger{% endif %}">
                     <td>
+                        {% if not offer.viewed %}
+                            <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>&nbsp;
+                        {% endif %}
                         {% if offer.suspicious %}
-                            <span title="Suspecte" class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span>
-                        {% elseif offer.contacted %}
-                            <span title="{{ offer.contactedAt|date("d/m/Y H:i") }}" class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
-                        {% elseif not offer.viewed %}
-                            <span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+                            <span title="Suspecte" class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span>&nbsp;
+                        {% endif %}
+                        {% if offer.contacted %}
+                            <span title="{{ offer.contactedAt|date("d/m/Y H:i") }}" class="glyphicon glyphicon-envelope" aria-hidden="true"></span>&nbsp;
+                        {% endif %}
+                        {% if offer.note %}
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>&nbsp;
                         {% endif %}
                     </td>
                     <td class="hidden-xs">
@@ -57,12 +62,12 @@
                     <td class="hidden-xs">
                         {% if not offer.favorite %}
                             {% if offer.hidden %}
-                                <button title="Rendre visible" type="button" class="btn btn-primary btn-warning unhideAction"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
+                                <button title="Rendre visible" data-id="{{ offer.id }}" type="button" class="btn btn-primary btn-warning unhideAction"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
                             {% else %}
-                                <button title="Masquer" type="button" class="btn btn-default btn-danger hideAction"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></button>
+                                <button title="Masquer" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-danger hideAction"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></button>
                             {% endif %}
                         {% else %}
-                            <button title="Enlever favori" type="button" class="btn btn-default btn-default unfavorite"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span> Enlever favori</button>
+                            <button title="Enlever favori" data-id="{{ offer.id }}" type="button" class="btn btn-default btn-default unfavorite"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span> Enlever favori</button>
                         {% endif %}
                     </td>
                     <td class="hidden-xs offerLabel">{{ offer.label|e }}</td>

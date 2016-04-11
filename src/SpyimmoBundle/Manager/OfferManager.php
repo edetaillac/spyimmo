@@ -30,7 +30,7 @@ class OfferManager
         return !$this->offerRepository->findOneByUrl($url);
     }
 
-    public function createOffer($title, $description, array $images, $url, $name, $price = null, $postalCode = null, $surface = null, $tel = null)
+    public function createOffer($title, $description, array $images, $url, $name, $price = null, $postalCode = null, $surface = null, $tel = null, $isBlacklisted = false)
     {
         if(!$description && !$tel && !$price && count($images) == 0) {
             $this->spyimmoLogger->logInfo(sprintf('   <comment>Not enough information to evaluate offer</comment>', $url));
@@ -38,65 +38,66 @@ class OfferManager
         }
 
         $info = $this->cleanString($title . ' ' . $description);
-        $isSuspicious = false;
-        $isHidden = false;
-        $isBlacklisted = $this->isBlacklisted($info);
-        if (!$isBlacklisted) {
-            $url = $this->cleanUrl($url);
-            $title = $this->cleanString($title);
-            $description = $this->cleanString($description);
-            $isSuspicious = $this->isSuspicious($description);
+        if(!$isBlacklisted) {
+            $isBlacklisted = $this->isBlacklisted($info);
+        }
 
-            $offer = new Offer();
-            $offer->setTitle($title);
-            $offer->setDescription($description);
-            $offer->setUrl($url);
-            $offer->setLabel($name);
-            $offer->setSuspicious($isSuspicious);
+        $url = $this->cleanUrl($url);
+        $title = $this->cleanString($title);
+        $description = $this->cleanString($description);
+        $isSuspicious = $this->isSuspicious($description);
 
-            if ($tel) {
-                $offer->setTel($this->cleanTel($tel));
-            }
+        $offer = new Offer();
+        $offer->setTitle($title);
+        $offer->setDescription($description);
+        $offer->setUrl($url);
+        $offer->setLabel($name);
+        $offer->setSuspicious($isSuspicious);
 
-            if ($price) {
-                $offer->setPrice($this->formatPrice($price));
-            } elseif (($price = $this->extractPrice($info)) > 0) {
-                $offer->setPrice($price);
-            }
+        if ($tel) {
+            $offer->setTel($this->cleanTel($tel));
+        }
 
-            if ($postalCode) {
-                $offer->setLocation($postalCode);
-            } elseif (($postalCode = $this->extractPostalCode($info)) > 0) {
-                $offer->setLocation($postalCode);
-            }
-            $isHidden = $this->isHidden($postalCode);
-            $offer->setHidden($isHidden);
+        if ($price) {
+            $offer->setPrice($this->formatPrice($price));
+        } elseif (($price = $this->extractPrice($info)) > 0) {
+            $offer->setPrice($price);
+        }
 
-            if ($surface) {
-                $offer->setSurface(intval($surface));
-            } elseif (($surface = $this->extractSurface($info)) > 0) {
-                $offer->setSurface($surface);
-            }
+        if ($postalCode) {
+            $offer->setLocation($postalCode);
+        } elseif (($postalCode = $this->extractPostalCode($info)) > 0) {
+            $offer->setLocation($postalCode);
+        }
+        $isHidden = $this->isHidden($postalCode) || $isBlacklisted || $isSuspicious;
+        $offer->setHidden($isHidden);
 
-            foreach($images as $image){
-                $picture = new Picture();
-                $picture->setSrc($image);
-                $picture->setOffer($offer);
-                $this->em->persist($picture);
-            }
+        if ($surface) {
+            $offer->setSurface(intval($surface));
+        } elseif (($surface = $this->extractSurface($info)) > 0) {
+            $offer->setSurface($surface);
+        }
 
-            $this->em->persist($offer);
-            $this->em->flush();
+        foreach($images as $image){
+            $picture = new Picture();
+            $picture->setSrc($image);
+            $picture->setOffer($offer);
+            $this->em->persist($picture);
+        }
 
-            if (!$isHidden) {
-                return true;
-            }
+        $this->em->persist($offer);
+        $this->em->flush();
+
+        if (!$isHidden) {
+            return true;
         }
 
         if($isSuspicious) {
             $this->spyimmoLogger->logInfo(sprintf('   <comment>Suspicious</comment>', $url));
+        } elseif($isBlacklisted) {
+            $this->spyimmoLogger->logInfo(sprintf('   <comment>Blacklisted</comment>', $url));
         } elseif($isHidden) {
-            $this->spyimmoLogger->logDebug(sprintf('   <comment>Hidden</comment>', $url));
+            $this->spyimmoLogger->logInfo(sprintf('   <comment>Hidden</comment>', $url));
         }
 
         return false;
@@ -193,17 +194,17 @@ class OfferManager
         foreach ($regexps as $regexp) {
             if (preg_match($regexp, $desc)) {
                 $this->spyimmoLogger->logInfo(sprintf('   <comment>STOP Word detected - "%s" found</comment>', $regexp));
-                return true;
+                return 1;
             }
         }
 
         if (preg_match('/\Wmeubl[éÉ]/mi', $desc) && !preg_match('/\Wnon\W+meubl[éÉ]/mi', $desc)) {
             $this->spyimmoLogger->logInfo(sprintf('   <comment>STOP Word detected - "%s" found and "%s" not found</comment>', '/\Wmeubl[éÉ]/mi', '/\Wnon\W+meubl[éÉ]/mi'));
-            return true;
+            return 1;
         }
 
 
-        return false;
+        return 0;
     }
 
     protected function isSuspicious($description)
