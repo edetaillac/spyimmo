@@ -1,6 +1,18 @@
-# spyimmo
+# Spyimmo
 
-A Symfony project created on March 8, 2016, 5:47 pm.
+Spyimmo is a real estate crawling Tool.
+
+## Traefik - Generate your own certificates (Dev HTTPS usage)
+
+Install mkcert
+```
+mkcert -install
+```
+
+Generate certificates
+```
+mkcert -cert-file infra/certs/local-cert.pem -key-file infra/certs/local-key.pem "docker.dev" "*.docker.dev"
+```
 
 ## OAuth2
 

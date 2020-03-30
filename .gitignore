@@ -1,5 +1,24 @@
+.DS_Store
+.idea
+
 app/config/parameters.yml
 bin
 composer.lock
 var
 vendor
+infra/certs/*
+!infra/certs/.keep
+
+# Cache, session files and logs (Symfony3)
+/var/cache/*
+/var/logs/*
+/var/sessions/*
+!var/cache/.gitkeep
+!var/logs/.gitkeep
+!var/sessions/.gitkeep
+
+# Assets and user uploads
+/web/bundles/
+/web/uploads/
+
+docker-compose.override.yml

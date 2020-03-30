@@ -1,29 +1,78 @@
-database:
-    environment:
-        MYSQL_ROOT_PASSWORD: 'root'
-        MYSQL_DATABASE: 'spyimmo'
-        MYSQL_USER: 'spyimmo'
-        MYSQL_PASSWORD: 'spyimmo'
-    image: mysql:5.7
-    ports:
-        - 3306:3306
+version: "3.4"
 
-php:
-    build: ./docker/php
-    links:
-        - database
-    ports:
-        - 9000:9000
-    volumes:
-        - ./:/srv/http
+services:
+    mysql:
+        image: mysql:latest
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+            MYSQL_ROOT_PASSWORD: 'root'
+            MYSQL_DATABASE: 'spyimmo'
+            MYSQL_USER: 'spyimmo'
+            MYSQL_PASSWORD: 'spyimmo'
+        restart: always
+        labels:
+            - "traefik.enable=false"
+        ports:
+            - 3306:3306
+        networks:
+            - web
 
-web:
-    build: ./docker/web
-    links:
-        - php
-    volumes:
-        - ./:/var/www
-        - ./docker/web/nginx.conf:/nginx.conf
-    ports:
-        - 80:80
-    command: nginx -c /nginx.conf
+    php-fpm:
+        build:
+            context: .
+            dockerfile: infra/docker/php/Dockerfile
+            target: dev
+        links:
+            - mysql
+        labels:
+            - "traefik.backend=spyimmo-php"
+            - "traefik.enable=false"
+        volumes:
+            - ./infra/docker/php/php.ini:/usr/local/etc/php/conf.d/php.local.ini
+            - ./:/app:cached
+            - ./web/app_dev.php:/app/web/app.php:ro
+        ports:
+            - 9000:9000
+        networks:
+            - web
+
+    nginx:
+        image: nginx:1.15.12-alpine
+        depends_on:
+            - php-fpm
+        labels:
+            - traefik.http.routers.spyimmo.rule=Host(`spyimmo.docker.dev`)
+            - traefik.http.routers.spyimmo.entrypoints=http
+            - traefik.http.routers.spyimmo.middlewares=redirect@file
+            - traefik.http.routers.spyimmos.rule=Host(`spyimmo.docker.dev`)
+            - traefik.http.routers.spyimmos.entrypoints=https
+            - traefik.http.routers.spyimmos.tls=true
+        volumes:
+            - "./infra/docker/web/nginx.conf:/etc/nginx/conf.d/default.conf"
+            - "./:/app"
+        networks:
+            - web
+
+    reverse-proxy:
+        image: traefik:v2.2
+        container_name: reverse-proxy
+        command:
+            - "--api.insecure=true"
+            - "--providers.docker=true"
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8080:8080"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./infra/docker/traefik/traefik.toml:/etc/traefik/traefik.toml:ro
+            - ./infra/docker/traefik/traefik.config.toml:/etc/traefik/traefik.config.toml:ro
+            - ./infra/certs:/etc/certs:ro
+        networks:
+            - web
+        labels:
+            - "traefik.frontend.redirect.entryPoint=https"
+
+networks:
+    web:
+        driver: bridge
