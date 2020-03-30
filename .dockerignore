@@ -1,0 +1,14 @@
+/*
+
+# Whitelist for production
+!/bin/console
+!/app
+!/web
+!/src
+!composer.json
+!composer.lock
+
+# Whitelist for test/dev
+!/tests
+!/phpunit.xml.dist
+!/bin/phpunit
